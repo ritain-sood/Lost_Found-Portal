@@ -3,7 +3,7 @@ const router = express.Router();
 const path = require("path");
 const { getDB } = require("./mongodb");
 const jwt = require("jsonwebtoken");
-const cookieParser = require("cookie-parser");
+
 
 const { Authentication, redirectIfAuthenticated } = require("./jwtAuth");
 

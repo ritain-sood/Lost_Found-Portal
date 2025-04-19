@@ -2,23 +2,23 @@
 const jwt = require("jsonwebtoken");
 const SECRET_KEY = "your_secret_key";
 
-function Authentication(req, res, next) {
-  const token = req.cookies.authToken;
+// function Authentication(req, res, next) {
+//   const token = req.cookies.authToken;
 
-  if (!token) {
-    return res.redirect("/auth/login");
-  }
+//   if (!token) {
+//     return res.redirect("/auth/login");
+//   }
 
-  try {
-    const decoded = jwt.verify(token, SECRET_KEY);
-    req.user = decoded;
-    next();
-  } catch (err) {
-    console.error("JWT verification failed:", err);
-    res.clearCookie("authToken");
-    return res.redirect("/auth/login");
-  }
-}
+//   try {
+//     const decoded = jwt.verify(token, SECRET_KEY);
+//     req.user = decoded;
+//     next();
+//   } catch (err) {
+//     console.error("JWT verification failed:", err);
+//     res.clearCookie("authToken");
+//     return res.redirect("/auth/login");
+//   }
+// }
 
 // For redirecting if already logged in
 function Authentication(req, res, next) {

@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Messages Dashboard</title>
+  <title>Lost & Found Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
     * {
       margin: 0;
@@ -67,59 +69,156 @@
 
     .main-content {
       flex: 1;
+      padding: 20px;
+      overflow-y: auto;
       background-color: #f4f6f8;
+    }
+
+    .item-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .item-image {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-right: 15px;
+    }
+
+    .item-info {
+      flex: 1;
+    }
+
+    .item-info h3 {
+      margin: 0 0 5px;
+      font-size: 18px;
+    }
+
+    .item-info p {
+      margin: 0;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .status-tag {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+      color: white;
+      margin-left: 10px;
+    }
+
+    .found {
+      background-color: #4caf50;
+    }
+
+    .lost {
+      background-color: #f44336;
+    }
+
+    .card-actions {
       display: flex;
       flex-direction: column;
-      padding: 20px;
+      gap: 6px;
+      margin-left: 16px;
     }
 
-    .message-card {
-      background-color: #ffffff;
-      padding: 15px 20px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-      transition: transform 0.2s ease;
+    .edit-btn,
+    .delete-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      color: white;
+      font-weight: 500;
+      transition: background 0.2s ease;
     }
 
-    .message-card:hover {
-      transform: translateY(-2px);
+    .edit-btn {
+      background-color: #1976d2;
     }
 
-    .message-card h3 {
-      font-size: 18px;
-      color: #333;
+    .edit-btn:hover {
+      background-color: #1565c0;
     }
 
-    .message-card p {
-      font-size: 14px;
-      color: #666;
+    .delete-btn {
+      background-color: #d32f2f;
+    }
+
+    .delete-btn:hover {
+      background-color: #b71c1c;
     }
   </style>
 </head>
+
 <body>
   <div class="sidebar">
     <div class="nav">
-      <button>Profile</button>
-      <button>Lost/Found Items</button>
-      <button class="active">Messages</button>
+      <button class="nav-btn active" data-tab="profile">Profile</button>
+      <button class="nav-btn" data-tab="items">Lost/Found Items</button>
+      <button class="nav-btn" data-tab="dashboard">Dashboard</button>
     </div>
     <button class="logout-btn">Logout</button>
   </div>
 
-  <div class="main-content">
-    <div class="message-card">
-      <h3>User-1</h3>
-      <p>Last Messages</p>
-    </div>
-    <div class="message-card">
-      <h3>User-2</h3>
-      <p>Last Messages</p>
-    </div>
-    <div class="message-card">
-      <h3>User-3</h3>
-      <p>Last Messages</p>
-    </div>
+  <div class="main-content" id="main-content">
+    <!-- Default Profile Content -->
+    <h2>Welcome to your Profile</h2>
+    <p>This is where your profile information will appear.</p>
   </div>
+
+  <!-- Edit Item Form (initially hidden) -->
+<div id="edit-item-form" class="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50 hidden">
+  <div class="bg-white p-8 rounded-lg shadow-xl w-96">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Edit Item</h2>
+    <form id="edit-item-form-content">
+      <div class="mb-4">
+        <label for="item-name" class="block text-sm font-medium text-gray-700">Item Name</label>
+        <input type="text" id="item-name" name="item_name" placeholder="Enter item name"
+          class="mt-1 p-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500" required />
+      </div>
+
+      <div class="mb-4">
+        <label for="item-description" class="block text-sm font-medium text-gray-700">Item Description</label>
+        <textarea id="item-description" name="item_description" placeholder="Enter item description"
+          class="mt-1 p-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
+          required></textarea>
+      </div>
+
+      <!-- Status Display (Read-only) -->
+      <div class="mb-4">
+        <label for="item-status" class="block text-sm font-medium text-gray-700">Item Status</label>
+        <input type="text" id="item-status" name="status"
+          class="mt-1 p-2 w-full border border-gray-300 rounded-md bg-gray-100" readonly />
+      </div>
+
+      <div class="flex justify-between gap-4">
+        <button type="submit"
+          class="w-full py-2 px-4 bg-green-500 text-white rounded-md font-semibold hover:bg-green-600 focus:ring-2 focus:ring-green-500">Update
+          Item</button>
+        <button type="button"
+          class="w-full py-2 px-4 bg-red-500 text-white rounded-md font-semibold hover:bg-red-600 focus:ring-2 focus:ring-red-500"
+          onclick="closeEditForm()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<script src="/profile.js"></script>
 </body>
+
+
+
 </html>

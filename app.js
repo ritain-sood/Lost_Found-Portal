@@ -22,11 +22,13 @@ app.use(express.static("./public"));
 
 const authenticationRoutes = require("./routes/authentication");
 const apiReports = require("./routes/reports");
+const crudRoutes = require("./routes/crud");
 const chatRoutes = require("./routes/chat")(io); // Pass the Socket.IO instance
 
 app.use("/auth", authenticationRoutes);
 app.use("/api", apiReports);
 app.use("/chat", chatRoutes); // Use the chat routes
+app.use("/user",crudRoutes);
 app.use(express.static(path.join(__dirname, "Frontend")));
 
 // Serve the dashboard
@@ -60,6 +62,17 @@ app.get("/messages", Authentication, (req, res) => {
 app.get("/chat", Authentication, (req, res) => {
   res.sendFile(path.join(__dirname, "Frontend", "chat.html"));
 });
+
+app.get("/profile", Authentication, (req, res) => {
+  res.sendFile(path.join(__dirname, "Frontend", "profile.html"));
+});
+
+
+app.get("/profile.js", Authentication, (req, res) => {
+  res.sendFile(path.join(__dirname, "Frontend", "profile.js"));
+});
+
+
 
 // Get user ID from auth token
 app.get("/auth/getUserId", (req, res) => {

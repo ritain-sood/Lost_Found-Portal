@@ -1,4 +1,5 @@
 let currentUserId = null;
+const backBtn = document.querySelector('.back-button');
 
 // Fetch the logged-in user's ID
 async function fetchUserId() {
@@ -103,4 +104,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     itemsContainer.innerHTML =
       "<p class='text-red-500'>Failed to load items.</p>";
   }
+
+  backBtn.addEventListener('click', () => {
+    window.location.href = '/'; 
+  });
 });
