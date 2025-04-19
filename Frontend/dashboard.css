@@ -1,0 +1,29 @@
+
+/* Animation for shaking and shadow effect */
+.icon-container {
+    position: relative;
+    transition: transform 0.2s ease-in-out;
+}
+
+.icon-container:hover {
+    animation: shake 1s ease-in-out infinite alternate, glow 1.5s ease-in-out infinite alternate;
+}
+
+/* Shaking effect */
+@keyframes shake {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(5deg); }
+    50% { transform: rotate(0deg); }
+    75% { transform: rotate(-5deg); }
+    100% { transform: rotate(0deg); }
+}
+
+/* Glowing effect */
+@keyframes glow {
+    0% { box-shadow: 0 0 10px rgba(24, 52, 43, 0.2); }
+    100% { box-shadow: 0 0 20px rgba(24, 52, 43, 0.5); }
+}
+
+
+
+

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Messages</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100 min-h-screen flex flex-col items-center p-6">
+    <!-- Header -->
+    <div class="w-full max-w-4xl bg-white shadow-lg rounded-lg p-6 mb-6">
+      <h1 class="text-2xl font-bold text-gray-800">My Messages</h1>
+      <p class="text-gray-500 text-sm">View and manage your conversations.</p>
+    </div>
+
+    <!-- Chat List -->
+    <div class="w-full max-w-4xl bg-white shadow-lg rounded-lg p-6">
+      <ul id="chatList" class="space-y-4">
+        <!-- Chat list will be dynamically populated -->
+        <li class="p-4 border rounded-lg bg-gray-50 hover:bg-gray-100 flex justify-between items-center">
+          <div>
+            <span class="font-bold text-gray-800">John Doe</span>
+            <p class="text-sm text-gray-500">Hey, I found your wallet!</p>
+          </div>
+          <span class="text-xs text-gray-400">12:45 PM</span>
+        </li>
+        <li class="p-4 border rounded-lg bg-gray-50 hover:bg-gray-100 flex justify-between items-center">
+          <div>
+            <span class="font-bold text-gray-800">Jane Smith</span>
+            <p class="text-sm text-gray-500">Can you confirm the item details?</p>
+          </div>
+          <span class="text-xs text-gray-400">11:30 AM</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Back to Dashboard Button -->
+    <div class="mt-6">
+      <a
+        href="/dashboard"
+        class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition"
+      >
+        Back to Dashboard
+      </a>
+    </div>
+
+   <script src="messages.js"></script>
+  </body>
+</html>

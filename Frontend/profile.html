@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Messages Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      display: flex;
+      height: 100vh;
+      background-color: #f4f6f8;
+    }
+
+    .sidebar {
+      width: 250px;
+      background-color: #ffffff;
+      border-right: 1px solid #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav button {
+      padding: 20px;
+      text-align: left;
+      font-size: 16px;
+      color: #333;
+      border: none;
+      background: none;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .nav button:hover,
+    .nav button.active {
+      background-color: #e3f2fd;
+      color: #1976d2;
+      font-weight: 600;
+    }
+
+    .logout-btn {
+      padding: 20px;
+      border-top: 1px solid #e0e0e0;
+      font-size: 16px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #d32f2f;
+      transition: background 0.2s ease;
+    }
+
+    .logout-btn:hover {
+      background-color: #fdecea;
+    }
+
+    .main-content {
+      flex: 1;
+      background-color: #f4f6f8;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+    }
+
+    .message-card {
+      background-color: #ffffff;
+      padding: 15px 20px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s ease;
+    }
+
+    .message-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .message-card h3 {
+      font-size: 18px;
+      color: #333;
+    }
+
+    .message-card p {
+      font-size: 14px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="nav">
+      <button>Profile</button>
+      <button>Lost/Found Items</button>
+      <button class="active">Messages</button>
+    </div>
+    <button class="logout-btn">Logout</button>
+  </div>
+
+  <div class="main-content">
+    <div class="message-card">
+      <h3>User-1</h3>
+      <p>Last Messages</p>
+    </div>
+    <div class="message-card">
+      <h3>User-2</h3>
+      <p>Last Messages</p>
+    </div>
+    <div class="message-card">
+      <h3>User-3</h3>
+      <p>Last Messages</p>
+    </div>
+  </div>
+</body>
+</html>

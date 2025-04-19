@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lost & Found</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body
+    class="bg-gradient-to-r from-blue-100 to-purple-200 min-h-screen flex items-center justify-center p-6"
+  >
+    <div class="max-w-7xl w-full bg-white shadow-lg rounded-lg p-8">
+      <!-- Navigation Bar -->
+      <nav
+        class="bg-transparent shadow-none p-4 flex justify-between items-center rounded-lg mb-6"
+      >
+        <div class="flex items-center space-x-3">
+          <img src="../images/logo.png" alt="Logo" class="h-12" />
+          <span class="text-2xl font-bold text-gray-800">LOST & FOUND</span>
+        </div>
+        <div class="relative w-80">
+          <input
+            type="text"
+            placeholder="Search here..."
+            class="border px-4 py-2 rounded-lg pl-10 w-full shadow-sm focus:ring-2 focus:ring-blue-400"
+          />
+          <img
+            src="../svg/search.svg"
+            class="w-5 h-5 text-gray-500 absolute left-3 top-1/2 transform -translate-y-1/2"
+          />
+        </div>
+        <div class="space-x-6 hidden md:flex">
+          <a
+            href="/"
+            class="hover:text-blue-500 font-medium transition duration-300"
+            >Home</a
+          >
+          <a
+            href="https://forms.gle/fnqYDfNWaFCAVpdK9"
+            class="hover:text-blue-500 font-medium transition duration-300"
+            >Help</a
+          >
+          <a
+            href="/auth/logout"
+            class="hover:text-blue-500 font-medium transition duration-300"
+            >Logout</a
+          >
+        </div>
+      </nav>
+
+      <!-- Lost & Found Listings -->
+      <div
+        id="itemsContainer"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+      ></div>
+
+      <!-- Back to Home Button -->
+      <div class="mt-6 text-center">
+        <button
+          type="button"
+          class="btn bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 shadow-md transition"
+        >
+          Back to Home
+        </button>
+      </div>
+    </div>
+
+    <script src="/auth/lfdashboard.js"></script>
+  </body>
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Lost and Found</title>
+  </head>
+
+  <body class="bg-gray-100 flex justify-center items-center min-h-screen">
+    <form
+      id="reportForm"
+      action="/api/reports"
+      method="post"
+      class="bg-white shadow-lg rounded-lg p-6 w-full max-w-3xl"
+      enctype="multipart/form-data"
+    >
+      <h1 class="text-xl font-bold text-center mb-4">Report an Item</h1>
+
+      <!-- Status Toggle -->
+      <div class="flex justify-center mb-4">
+        <div class="flex bg-gray-200 rounded-full p-1">
+          <button
+            type="button"
+            id="lostBtn"
+            name="status"
+            value="lost"
+            class="px-6 py-2 rounded-full bg-teal-500 text-white transition"
+          >
+            Lost
+          </button>
+          <button
+            type="button"
+            id="foundBtn"
+            name="status"
+            value="found"
+            class="px-6 py-2 rounded-full text-gray-600 transition"
+          >
+            Found
+          </button>
+        </div>
+      </div>
+
+      <!-- Location Input -->
+      <div class="mb-4">
+        <h2 class="font-semibold mb-2">Where?</h2>
+        <textarea
+          name="location"
+          class="w-full p-2 border rounded"
+          placeholder="Enter the location of the loss/find"
+          required
+        ></textarea>
+      </div>
+
+      <!-- Date Selection -->
+      <div class="mb-4">
+        <h2 class="font-semibold mb-2">When?</h2>
+        <div class="flex gap-2">
+          <button
+            type="button"
+            id="todayBtn"
+            name="date"
+            value="today"
+            class="px-4 py-2 bg-gray-200 rounded"
+          >
+            Today
+          </button>
+          <button
+            type="button"
+            id="yesterdayBtn"
+            name="date"
+            value="yesterday"
+            class="px-4 py-2 bg-gray-200 rounded"
+          >
+            Yesterday
+          </button>
+          <button
+            type="button"
+            id="dayBeforeBtn"
+            name="date"
+            value="day_before_yesterday"
+            class="px-4 py-2 bg-gray-200 rounded"
+          >
+            Day before yesterday
+          </button>
+          <input
+            id="dateInput"
+            name="custom_date"
+            type="datetime-local"
+            class="border p-2 rounded"
+            required
+          />
+        </div>
+      </div>
+
+      <!-- Category Selection -->
+      <div>
+        <h2 class="font-semibold mb-2">Select a category</h2>
+        <div class="grid grid-cols-3 gap-4">
+          <div
+            class="p-4 border rounded text-center category"
+            data-category="Wallet & Money"
+          >
+            Wallet & Money
+          </div>
+          <div
+            class="p-4 border rounded text-center category"
+            data-category="Identity Document"
+          >
+            Identity Document
+          </div>
+          <div
+            class="p-4 border rounded text-center category"
+            data-category="Bag"
+          >
+            Bag
+          </div>
+          <div
+            class="p-4 border rounded text-center category"
+            data-category="Electronics"
+          >
+            Electronics
+          </div>
+          <div
+            class="p-4 border rounded text-center category"
+            data-category="Books"
+          >
+            Books
+          </div>
+          <div
+            class="p-4 border rounded text-center category"
+            data-category="Jewelry & Watch"
+          >
+            Jewelry & Watch
+          </div>
+          <div
+            class="p-4 border rounded text-center category"
+            data-category="Clothes & Accessories"
+          >
+            Clothes & Accessories
+          </div>
+          <div
+            class="p-4 border rounded text-center category"
+            data-category="Miscellaneous"
+          >
+            Miscellaneous
+          </div>
+          <input type="hidden" id="selectedCategoryInput" name="category" />
+        </div>
+      </div>
+
+      <!-- Additional Item Details (Initially Hidden) -->
+      <div id="itemDetails" class="hidden mt-6 p-4 border rounded bg-gray-50">
+        <h2 class="font-semibold mb-2">Item Details</h2>
+        <p id="selectedCategory" class="text-gray-600 mb-2"></p>
+
+        <input type="hidden" id="status" name="status" />
+
+        <label class="block mb-2">Item Name:</label>
+        <input
+          type="text"
+          id="itemName"
+          name="item_name"
+          class="w-full p-2 border rounded mb-4"
+          placeholder="Enter item name"
+          required
+        />
+
+        <label class="block mb-2">Upload Image:</label>
+        <input
+          type="file"
+          id="itemImage"
+          name="item_image"
+          class="w-full p-2 border rounded mb-4"
+          required
+        />
+
+        <label class="block mb-2">Description:</label>
+        <textarea
+          id="itemDescription"
+          name="item_description"
+          class="w-full p-2 border rounded mb-4"
+          placeholder="Describe the item..."
+          required
+        ></textarea>
+
+        <label class="block mb-2">Name:</label>
+        <input
+          type="text"
+          id="name"
+          name="reporter_name"
+          class="w-full p-2 border rounded mb-4"
+          placeholder="Enter your name"
+          required
+        />
+
+        <label class="block mb-2">Email:</label>
+        <input
+          type="email"
+          id="email"
+          name="reporter_email"
+          class="w-full p-2 border rounded mb-4"
+          placeholder="Enter your Email"
+          required
+        />
+
+        <label class="block mb-2">Contact Number:</label>
+        <input
+          type="tel"
+          id="contactInfo"
+          name="reporter_contact"
+          class="w-full p-2 border rounded mb-4"
+          placeholder="Enter your contact number"
+          required
+        />
+
+        <div class="mb-4">
+          <input
+            type="checkbox"
+            id="terms"
+            name="terms"
+            value="accepted"
+            class="mr-2"
+            required
+          />
+          <label for="terms"
+            >I accept the terms and conditions and the privacy policy.</label
+          >
+        </div>
+
+        <button
+          type="submit"
+          class="btn w-full py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+        >
+          Submit
+        </button>
+      </div>
+    </form>
+  </body>
+  <script src="lostfound.js"></script>
+</html>

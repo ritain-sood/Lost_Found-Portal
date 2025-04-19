@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lost & Found</title>
+    <link href="dashboard.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-[#EDE8F5] text-[#8697C4]">
+    <!--Navbar-->
+    <nav
+      class="bg-transparent shadow-none p-4 flex justify-between items-center"
+    >
+      <div class="flex items-center space-x-3">
+        <img src="/images/logo.png" alt="Logo" class="h-10" />
+        <span class="text-lg font-bold text-[#3D52A0]">LOST & FOUND</span>
+      </div>
+      <div class="space-x-6 hidden md:flex">
+        <a href="/" class="hover:text-[#7091E6] font-medium">Home</a>
+        <a href="/auth/login?redirect=/dashboard" class="hover:text-[#7091E6] font-medium"
+          >Dashboard</a
+        >
+        <div class="relative group">
+          <div class="hover:text-[#7091E6] font-medium">Category</div>
+          <div
+            class="absolute left-0 mt-2 w-25 bg-[#EDE8F5] shadow-none rounded-lg opacity-0 group-hover:opacity-100 transition-opacity border border-[#ADBBDA] p-2"
+          >
+            <a
+              href="/lostfound?status=lost"
+              class="block px-6 py-3 text-[#8697C4] hover:bg-[#ADBBDA] hover:text-[#7091E6] rounded-t-lg"
+              >Lost</a
+            >
+            <a
+              href="/lostfound?status=found"
+              class="block px-6 py-3 text-[#8697C4] hover:bg-[#ADBBDA] hover:text-[#7091E6] rounded-b-lg"
+              >Found</a
+            >
+          </div>
+        </div>
+
+        <!-- <div class="relative group">
+          <a href="#" class="hover:text-[#7091E6] font-medium">Account</a>
+          <div
+            class="absolute left-0 mt-2 w-25 bg-[#EDE8F5] shadow-none rounded-lg opacity-0 group-hover:opacity-100 transition-opacity border border-[#ADBBDA] p-2"
+          >
+            <a
+              href="/auth/login?redirect=/"
+              class="block px-6 py-3 text-[#8697C4] hover:bg-[#ADBBDA] hover:text-[#7091E6] rounded-t-lg"
+              >Login</a
+            >
+            <a
+              href="/auth/signup"
+              class="block px-6 py-3 text-[#8697C4] hover:bg-[#ADBBDA] hover:text-[#7091E6] rounded-b-lg"
+              >Register</a
+            >
+          </div>
+        </div> -->
+
+        <div class="relative group">
+            <a href="#" class="hover:text-[#7091E6] font-medium">Account</a>
+            <div id="accountDropdown"
+                class="absolute left-0 mt-2 w-25 bg-[#EDE8F5] shadow-none rounded-lg opacity-0 group-hover:opacity-100 transition-opacity border border-[#ADBBDA] p-2"
+            >
+                <!-- Default: Login/Register (Will be replaced by JS if logged in) -->
+                <a href="/auth/login?redirect=/" class="block px-6 py-3 text-[#8697C4] hover:bg-[#ADBBDA] hover:text-[#7091E6] rounded-t-lg">
+                    Login
+                </a>
+                <a href="/auth/signup" class="block px-6 py-3 text-[#8697C4] hover:bg-[#ADBBDA] hover:text-[#7091E6] rounded-b-lg">
+                    Register
+                </a>
+            </div>
+        </div>
+
+        <a
+          href="https://forms.gle/fnqYDfNWaFCAVpdK9"
+          class="hover:text-[#7091E6] font-medium"
+          >Help</a
+        >
+      </div>
+    </nav>
+    <!--Section 1 container-->
+    <section
+      class="flex flex-col md:flex-row items-center justify-between p-10 bg-[#ADBBDA]"
+    >
+      <div class="md:w-1/2">
+        <h1 class="text-4xl font-bold text-[#3D52A0]">
+          Lost & Found Made Simple - Helping You Reconnect with Your Belongings!
+        </h1>
+        <p class="text-[#8697C4] mt-4">
+          Lost or found something? Let us help you
+        </p>
+        <div class="mt-6 flex space-x-4">
+          <a
+            href="/lostfound?status=lost"
+            class="bg-[#3D52A0] text-white px-6 py-3 rounded-full font-semibold shadow-md hover:bg-[#7091E6] transition duration-300"
+          >
+            I HAVE LOST
+          </a>
+          <a
+            href="/lostfound?status=found"
+            class="bg-white text-[#3D52A0] px-6 py-3 rounded-full border border-[#8697C4] shadow-md hover:bg-[#EDE8F5] transition duration-300"
+          >
+            I HAVE FOUND
+          </a>
+        </div>
+      </div>
+      <div class="md:w-1/2 flex justify-center">
+        <img
+          src="/images/lostfound.png"
+          alt="Lost & Found Hero Image"
+          class="w-full max-w-lg"
+        />
+      </div>
+    </section>
+
+    <!--Section for work process-->
+    <section class="bg-[#EDE8F5] flex flex-col items-center py-16">
+      <!-- Heading Section -->
+      <h2 class="text-2xl font-bold text-[#3D52A0]">HOW WE HELP YOU</h2>
+      <p class="text-[#8697C4] mt-2">How it works</p>
+
+      <!-- Steps Section -->
+      <div class="relative flex items-center justify-center space-x-20 mt-10">
+        <!-- Step 1 -->
+        <div class="flex flex-col items-center w-64 text-center relative">
+          <div
+            class="icon-container relative w-32 h-32 flex items-center justify-center rounded-2xl bg-[#ADBBDA] shadow-lg border border-[#8697C4]"
+          >
+            <div
+              class="absolute inset-0 bg-[#7091E6] blur-3xl rounded-2xl opacity-20"
+            ></div>
+            <img
+              src="/svg/report.svg"
+              alt="Report Icon"
+              class="w-12 h-12 relative z-10"
+            />
+          </div>
+          <h3 class="font-semibold text-lg text-[#3D52A0] mt-4">
+            Report a lost or found item
+          </h3>
+          <p class="text-[#8697C4] mt-2 text-sm">
+            Fill the declaration and give as much detail as possible to help
+            identify it quickly.
+          </p>
+        </div>
+
+        <!-- Dotted Line -->
+        <div class="dots text-[#7091E6]">
+          <span></span><span></span><span></span><span></span> <span></span
+          ><span></span><span></span>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="flex flex-col items-center w-64 text-center relative">
+          <div
+            class="icon-container relative w-32 h-32 flex items-center justify-center rounded-2xl bg-[#ADBBDA] shadow-lg border border-[#8697C4]"
+          >
+            <div
+              class="absolute inset-0 bg-[#7091E6] blur-3xl rounded-2xl opacity-20"
+            ></div>
+            <img
+              src="/svg/shield.svg"
+              alt="Ownership Icon"
+              class="w-12 h-12 relative z-10"
+            />
+          </div>
+          <h3 class="font-semibold text-lg text-[#3D52A0] mt-4">
+            Prove ownership of the item
+          </h3>
+          <p class="text-[#8697C4] mt-2 text-sm">
+            Once the lost item is matched, prove who you are via a security
+            question.
+          </p>
+        </div>
+
+        <!-- Dotted Line -->
+        <div class="dots text-[#7091E6]">
+          <span></span><span></span><span></span><span></span> <span></span
+          ><span></span><span></span>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="flex flex-col items-center w-64 text-center relative">
+          <div
+            class="icon-container relative w-32 h-32 flex items-center justify-center rounded-2xl bg-[#ADBBDA] shadow-lg border border-[#8697C4]"
+          >
+            <div
+              class="absolute inset-0 bg-[#7091E6] blur-3xl rounded-2xl opacity-20"
+            ></div>
+            <img
+              src="/svg/handshake.svg"
+              alt="Get Back Icon"
+              class="w-12 h-12 relative z-10"
+            />
+          </div>
+          <h3 class="font-semibold text-lg text-[#3D52A0] mt-4">
+            Get it back!
+          </h3>
+          <p class="text-[#8697C4] mt-2 text-sm">
+            Once authenticated, you get pickup or delivery details.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!--Rating section-->
+    <section class="bg-[#EDE8F5] py-10">
+      <div class="flex flex-col items-center justify-center p-4">
+        <div class="bg-[#ADBBDA] p-6 rounded-lg shadow-md text-center w-80">
+          <div class="flex justify-center items-center space-x-1 mb-4">
+            <span class="text-yellow-400 text-4xl">&#9733;</span>
+            <span class="text-yellow-400 text-4xl">&#9733;</span>
+            <span class="text-yellow-400 text-4xl">&#9733;</span>
+            <span class="text-yellow-400 text-4xl">&#9733;</span>
+            <span class="text-yellow-400 text-4xl">&#9733;</span>
+          </div>
+          <p class="text-xl font-bold text-[#3D52A0]">20K+</p>
+          <p class="text-[#8697C4]">User reviews to</p>
+          <p class="text-2xl font-bold text-[#3D52A0]">5/5</p>
+        </div>
+      </div>
+    </section>
+
+    <!--sliding section-->
+
+    <div>
+      Lorem ipsum dolor, sit amet consectetur adipisicing elit. Deserunt fuga
+      soluta sit ut similique eveniet magnam excepturi molestias! Assumenda
+      voluptate provident tempore natus nam repudiandae deserunt similique
+      ratione voluptas cupiditate!
+    </div>
+
+    <!--Team section-->
+    <section class="bg-gray-100 flex justify-center py-10">
+      <div class="container mx-auto px-4">
+        <h2 class="text-center text-2xl font-bold mb-6">TEAM</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-10">
+          <!-- Founder Card 1 -->
+          <div
+            class="bg-white shadow-lg rounded-lg p-6 text-center transition duration-300 hover:shadow-2xl hover:shadow-grey-700"
+          >
+            <img
+              src="/images/profile.jpg"
+              alt="Founder"
+              class="mx-auto rounded-full w-24 h-24 mb-4"
+            />
+            <h3 class="text-lg font-semibold">Ritain Sood</h3>
+            <!-- <p class="text-gray-700"></p> -->
+            <p class="text-sm text-gray-500">iamritainsood@gmail.com</p>
+            <a
+              href="https://www.linkedin.com/in/ritain-sood/"
+              class="inline-block mt-3 text-blue-700 text-2xl"
+              >in</a
+            >
+          </div>
+          <!-- Founder Card 2 -->
+          <div
+            class="bg-white shadow-lg rounded-lg p-6 text-center transition duration-300 hover:shadow-2xl hover:shadow-green-500"
+          >
+            <img
+              src="/images/profile.jpg"
+              alt="Founder"
+              class="mx-auto rounded-full w-24 h-24 mb-4"
+            />
+            <h3 class="text-lg font-semibold">Gaurav Sharma</h3>
+            <!-- <p class="text-gray-700">b</p> -->
+            <p class="text-sm text-gray-500">iamgauravvashisht7@gmail.com</p>
+            <a
+              href="https://www.linkedin.com/in/gaurav-sharma90151/"
+              class="inline-block mt-3 text-blue-700 text-2xl"
+              >in</a
+            >
+          </div>
+          <!-- Founder Card 3 -->
+          <div
+            class="bg-white shadow-lg rounded-lg p-6 text-center transition duration-300 hover:shadow-2xl hover:shadow-green-500"
+          >
+            <img
+              src="/images/profile.jpg"
+              alt="Founder"
+              class="mx-auto rounded-full w-24 h-24 mb-4"
+            />
+            <h3 class="text-lg font-semibold">Varun Kumar</h3>
+            <!-- <p class="text-gray-700">dfsf</p> -->
+            <p class="text-sm text-gray-500">varun.mnd56@gmail.com</p>
+            <a
+              href="https://www.linkedin.com/in/varun-kumar-442604252/"
+              class="inline-block mt-3 text-blue-700 text-2xl"
+              >in</a
+            >
+          </div>
+          <!-- Founder Card 4 -->
+          <div
+            class="bg-white shadow-lg rounded-lg p-6 text-center transition duration-300 hover:shadow-2xl hover:shadow-green-500"
+          >
+            <img
+              src="/images/profile.jpg"
+              alt="Founder"
+              class="mx-auto rounded-full w-24 h-24 mb-4"
+            />
+            <h3 class="text-lg font-semibold">Rohit Dogra</h3>
+            <!-- <p class="text-gray-700">b</p> -->
+            <p class="text-sm text-gray-500">dograrohit954@gmail.com</p>
+            <a
+              href="https://www.linkedin.com/in/rohit-dogra2004"
+              class="inline-block mt-3 text-blue-700 text-2xl"
+              >in</a
+            >
+          </div>
+          <!-- Founder Card 5 -->
+          <div
+            class="bg-white shadow-lg rounded-lg p-6 text-center transition duration-300 hover:shadow-2xl hover:shadow-green-500"
+          >
+            <img
+              src="/images/profile.jpg"
+              alt="Founder"
+              class="mx-auto rounded-full w-24 h-24 mb-4"
+            />
+            <h3 class="text-lg font-semibold">Kalash Thakur</h3>
+            <p class="text-gray-700"></p>
+            <p class="text-sm text-gray-500">kalashthakur44@gmail.com</p>
+            <a
+              href="https://www.linkedin.com/in/kalashh-thakur-9ba4a131b"
+              class="inline-block mt-3 text-blue-700 text-2xl"
+              >in</a
+            >
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!--footer-->
+    <footer class="bg-gray-900 text-white p-8 mt-10">
+      <div
+        class="max-w-screen-xl mx-auto flex flex-col md:flex-row justify-between items-start space-y-6 md:space-y-0"
+      >
+        <!-- Logo & About -->
+        <div class="md:w-1/3">
+          <img
+            src="/images/logo.png"
+            alt="Lost & Found Logo"
+            class="h-12 mb-4"
+          />
+          <p class="text-gray-400">
+            Connecting people with their lost belongings.<br />
+            Report lost or found items easily.
+          </p>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="md:w-1/3">
+          <h3 class="text-lg font-semibold mb-3">Quick Links</h3>
+          <ul class="text-gray-400 space-y-2">
+            <li><a href="/" class="hover:text-blue-400">Home</a></li>
+            <li>
+              <a href="/lostfound" class="hover:text-blue-400"
+                >Report Lost Item</a
+              >
+            </li>
+            <li>
+              <a href="/lostfound" class="hover:text-blue-400"
+                >Report Found Item</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://forms.gle/fnqYDfNWaFCAVpdK9"
+                class="hover:text-blue-400"
+                >Help & FAQs</a
+              >
+            </li>
+          </ul>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="md:w-1/3">
+          <h3 class="text-lg font-semibold mb-3">Contact Us</h3>
+          <p class="text-gray-400">Email: lostfoundportal@gmail.com</p>
+          <p class="text-gray-400">Phone: 9015166169</p>
+          <p class="text-gray-400">Address: Chitkara University, Baddi</p>
+        </div>
+      </div>
+
+      <!-- Copyright -->
+      <div class="text-center text-gray-500 border-t border-gray-700 mt-6 pt-4">
+        © 2025 Lost & Found. All Rights Reserved.
+      </div>
+    </footer>
+  </body>
+  <script src="dashboard.js"></script>
+</html>

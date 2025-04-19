@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Password</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex justify-center items-center min-h-screen p-4">
+
+    <div class="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md">
+        <!-- Header Section -->
+        <div class="text-center mb-6">
+            <h2 class="text-2xl font-semibold">Reset Your Password</h2>
+            <p class="text-sm text-gray-500">Enter your new password below to reset it.</p>
+        </div>
+
+        <!-- Reset Password Form -->
+        <form action="/auth/resetPassword" method="post">
+            <!-- Display Email (filled from the query string) -->
+            <div class="mb-4">
+                <label for="username" class="block text-gray-700 text-sm font-medium mb-2 pl-0.5">Your Email</label>
+                <input type="email" id="username" name="username" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" value={{username}} disabled />
+            </div>
+        
+            <!-- New Password -->
+            <div class="mb-4">
+                <label for="new-password" class="block text-gray-700 text-sm font-medium mb-2 pl-0.5">New Password</label>
+                <input type="password" id="new-password" name="new-password" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" placeholder="Enter your new password" required />
+            </div>
+        
+            <!-- Confirm Password -->
+            <div class="mb-4">
+                <label for="confirm-password" class="block text-gray-700 text-sm font-medium mb-2 pl-0.5">Confirm Password</label>
+                <input type="password" id="confirm-password" name="confirm-password" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" placeholder="Confirm your new password" required />
+            </div>
+        
+            <button class="w-full bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 focus:ring-2 focus:ring-blue-400 transition">
+                Reset Password
+            </button>
+        </form>
+        
+
+        <!-- Back to Login -->
+        <div class="text-center mt-6">
+            <p class="text-gray-500 text-sm">
+                Remembered your password? <a href="/auth/login" class="text-blue-500 hover:underline">Back to Login</a>
+            </p>
+        </div>
+    </div>
+
+</body>
+    <script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = urlParams.get('username');
+        if (username) {
+            document.getElementById('username').value = username;
+        }
+    });
+</script>
+</html>
