@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <a href="/profile" class="block px-4 py-3 text-[#8697C4] hover:bg-[#ADBBDA] hover:text-[#7091E6] rounded-t-lg">
                         Profile
                     </a>
-                    <a href="/messages" class="block px-4 py-3 text-[#8697C4] hover:bg-[#ADBBDA] hover:text-[#7091E6] rounded-t-lg">
+                    <a href="/chat" class="block px-4 py-3 text-[#8697C4] hover:bg-[#ADBBDA] hover:text-[#7091E6] rounded-t-lg">
                         My Messages
                     </a>
                     <a href="/auth/logout"  class="block px-4 py-3 text-[#8697C4] hover:bg-[#ADBBDA] hover:text-[#7091E6] rounded-b-lg">

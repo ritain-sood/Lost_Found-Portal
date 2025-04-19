@@ -1,5 +1,5 @@
 let currentUserId = null;
-const backBtn = document.querySelector('.back-button');
+const backBtn = document.querySelector(".back-button");
 
 // Fetch the logged-in user's ID
 async function fetchUserId() {
@@ -75,7 +75,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         <div class="m-4">
           <button class="contact-btn w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition" 
             data-item-id="${item._id}" 
-            data-owner-id="${item.reporter_email}"> <!-- Use reporter_email as the unique identifier -->
+            data-owner-id="${
+              item.reporter_email
+            }"> <!-- Use reporter_email as the unique identifier -->
             Contact
           </button>
         </div>
@@ -86,7 +88,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // Add event listeners to "Contact" buttons
     document.querySelectorAll(".contact-btn").forEach((button) => {
-      button.addEventListener("click", function () {
+      button.addEventListener("click", async function () {
         const receiverId = this.getAttribute("data-owner-id"); // Owner's email or unique ID
 
         if (!currentUserId) {
@@ -95,17 +97,35 @@ document.addEventListener("DOMContentLoaded", async function () {
           return;
         }
 
-        // Redirect to the chat page with senderId and receiverId
-        window.location.href = `/chat?senderId=${currentUserId}&receiverId=${receiverId}`;
+        try {
+          // Create a new chat (if it doesn't already exist)
+          const response = await fetch("/chat/createChat", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ senderId: currentUserId, receiverId }),
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to create chat");
+          }
+
+          // Redirect to the chat page with receiverId in the query string
+          window.location.href = `/chat?receiverId=${receiverId}`;
+        } catch (error) {
+          console.error("Error creating chat:", error);
+          alert("Unable to create chat. Please try again.");
+        }
       });
     });
   } catch (error) {
-    console.error("Error fetching data:", error);
+    console.error("Error fetching items:", error);
     itemsContainer.innerHTML =
-      "<p class='text-red-500'>Failed to load items.</p>";
+      "<p class='text-red-500'>Failed to load items. Please try again later.</p>";
   }
 
-  backBtn.addEventListener('click', () => {
-    window.location.href = '/'; 
+  backBtn.addEventListener("click", () => {
+    window.location.href = "/";
   });
 });
