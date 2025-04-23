@@ -1,6 +1,8 @@
 const mongodb = require("mongodb");
+require('dotenv').config();
+
 const client = new mongodb.MongoClient(
-  "mongodb+srv://lostfoundportal:12345@cluster0.rznuq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+  process.env.MONGODB_URI,
   { useNewUrlParser: true, useUnifiedTopology: true }
 );
 

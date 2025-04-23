@@ -473,7 +473,7 @@ document.addEventListener('DOMContentLoaded', () => {
           
           closeEditForm();
         } else {
-          alert('Failed to update item. Please try again.');
+          alert(data.message || 'Failed to update item. Please try again.');
         }
       })
       .catch(error => {

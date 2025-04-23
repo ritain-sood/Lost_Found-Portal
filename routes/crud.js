@@ -116,8 +116,10 @@ router.delete("/items/:id", Authentication, async (req, res) => {
 router.get("/items/:id", Authentication, async (req, res) => {
     const db = getDB();
     const itemId = req.params.id;
+    const { item_name, item_description } = req.body;
     try {
       const item = await db.collection("items").findOne({ _id: new ObjectId(itemId) });
+
       if (item) {
         res.json({ item });
       } else {
