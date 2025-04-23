@@ -43,7 +43,7 @@ router.post("/checkCred", async (req, res) => {
 
     if (!user || user.password !== req.body.password) {
       console.log("Invalid credentials");
-      return res.redirect("/auth/login");
+      return res.redirect("/auth/signup");
     }
 
     const token = jwt.sign(
@@ -95,11 +95,29 @@ router.post("/addCred", async (req, res) => {
 
 router.get("/check-login", async (req, res) => {
     try {
-        const token = req.cookies.authToken; // Get token from cookies
+        const token = req.cookies.authToken;
         if (!token) return res.status(401).json({ message: "Not authenticated" });
 
         const decoded = jwt.verify(token, SECRET_KEY);
-        res.json({ user: { username: decoded.username, role: decoded.role } });
+        
+        // Get full user data from database
+        const db = getDB();
+        const user = await db.collection("users").findOne({ username: decoded.username });
+        
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Send complete user data
+        res.json({ 
+            user: {
+                username: user.username,
+                firstname: user.firstname,
+                lastname: user.lastname,
+                phone: user.phone,
+                role: user.role
+            }
+        });
     } catch (error) {
         res.status(401).json({ message: "Invalid token" });
     }

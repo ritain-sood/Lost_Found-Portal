@@ -1,220 +1,252 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chat</title>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-      rel="stylesheet"
-    />
-  </head>
-  <body class="h-screen bg-gray-200">
-    <div class="flex h-full">
-      <!-- Left Sidebar: Contacts -->
-      <div class="w-1/4 bg-white border-r overflow-y-auto">
-        <div class="p-4 border-b font-bold text-lg">Chats</div>
-        <div id="chatList"></div>
-      </div>
 
-      <!-- Right Side: Chat Area -->
-      <div class="flex-1 flex flex-col bg-gray-50">
-        <div class="p-4 bg-white border-b shadow-sm">
-          <p id="receiverName" class="font-semibold">Select a user to chat</p>
-        </div>
-        <div id="chatMessages" class="flex-1 p-4 overflow-y-auto space-y-4"></div>
-        <div class="p-4 bg-white border-t flex items-center">
-          <input
-            id="messageInput"
-            type="text"
-            placeholder="Type a message"
-            class="flex-1 border rounded-full px-4 py-2 mr-2 focus:outline-none"
-            disabled
-          />
-          <button
-            id="sendButton"
-            class="bg-blue-500 text-white px-4 py-2 rounded-full"
-            disabled
-          >
-            <i class="fas fa-paper-plane"></i>
-          </button>
-        </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+</head>
+
+<body class="h-screen bg-gray-200">
+  <div class="flex h-full">
+    <!-- Left Sidebar: Contacts -->
+    <div class="w-1/4 bg-white border-r overflow-y-auto">
+      <div class="p-4 border-b font-bold text-lg flex justify-between items-center">
+        Chats
+        <button id="backBtn" class="bg-gray-200 text-gray-700 px-3 py-1 rounded hover:bg-gray-300 text-sm ml-2">
+          &larr; Back
+        </button>
       </div>
+      <div id="chatList"></div>
     </div>
 
-    <script>
-      document.addEventListener("DOMContentLoaded", async () => {
-        const socket = io();
-        const chatList = document.getElementById("chatList");
-        const chatMessages = document.getElementById("chatMessages");
-        const messageInput = document.getElementById("messageInput");
-        const sendButton = document.getElementById("sendButton");
-        const receiverName = document.getElementById("receiverName");
+    <!-- Right Side: Chat Area -->
+    <div class="flex-1 flex flex-col bg-gray-50">
+      <div class="p-4 bg-white border-b shadow-sm">
+        <p id="receiverName" class="font-semibold">Select a user to chat</p>
+      </div>
+      <div id="chatMessages" class="flex-1 p-4 overflow-y-auto space-y-4"></div>
+      <div class="p-4 bg-white border-t flex items-center">
+        <input id="messageInput" type="text" placeholder="Type a message"
+          class="flex-1 border rounded-full px-4 py-2 mr-2 focus:outline-none" disabled />
+        <button id="sendButton" class="bg-blue-500 text-white px-4 py-2 rounded-full" disabled>
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const socket = io();
+      const chatList = document.getElementById("chatList");
+      const chatMessages = document.getElementById("chatMessages");
+      const messageInput = document.getElementById("messageInput");
+      const sendButton = document.getElementById("sendButton");
+      const receiverName = document.getElementById("receiverName");
+      const backBtn = document.getElementById("backBtn");
     
-        let currentUserId = null;
-        let selectedReceiverId = null;
+      let currentUserId = null;
+      let selectedReceiverId = null;
     
-        // Extract receiverId from the URL query parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        selectedReceiverId = urlParams.get("receiverId");
+      // Extract receiverId from the URL query parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      selectedReceiverId = urlParams.get("receiverId");
     
-        if (!selectedReceiverId) {
-          alert("No receiver selected. Please try again.");
-          window.location.href = "/dashboard"; // Redirect back to dashboard
-          return;
+      // Back button functionality
+      backBtn.addEventListener("click", () => {
+        window.location.href = "/";
+      });
+    
+      // Fetch the logged-in user's ID
+      async function fetchUserId() {
+        try {
+          const response = await fetch("/auth/getUserId");
+          if (!response.ok) throw new Error("Failed to fetch user ID");
+          const data = await response.json();
+          currentUserId = data.userId;
+        } catch (error) {
+          console.error("Error fetching user ID:", error);
+          alert("Unable to fetch your user ID. Please log in again.");
         }
+      }
     
-        // Fetch the logged-in user's ID
-        async function fetchUserId() {
-          try {
-            const response = await fetch("/auth/getUserId");
-            if (!response.ok) throw new Error("Failed to fetch user ID");
+      // Render the chat list and highlight the selected contact
+      function renderChatList(users) {
+        // Filter out the current user from the chat list
+        const filteredUsers = users.filter(user => user.userId !== currentUserId);
     
-            const data = await response.json();
-            currentUserId = data.userId;
-          } catch (error) {
-            console.error("Error fetching user ID:", error);
-            alert("Unable to fetch your user ID. Please log in again.");
-          }
-        }
-    
-        // Fetch all chats for the logged-in user
-        async function fetchAllChats() {
-          try {
-            const response = await fetch("/chat/chatUsers");
-            if (!response.ok) throw new Error("Failed to fetch chat users");
-    
-            const users = await response.json();
-            renderChatList(users);
-          } catch (error) {
-            console.error("Error fetching chat users:", error);
-            chatList.innerHTML =
-              "<p class='text-red-500'>Failed to load chats.</p>";
-          }
-        }
-    
-        // Render the chat list
-        function renderChatList(users) {
-          chatList.innerHTML = users
-            .map(
-              (user) => `
+        chatList.innerHTML = filteredUsers
+          .map(
+            (user) => `
             <div
-              class="p-4 border-b cursor-pointer hover:bg-gray-100"
+              class="p-4 border-b cursor-pointer hover:bg-gray-100${user.userId === selectedReceiverId ? ' bg-blue-100' : ''}"
               data-user-id="${user.userId}"
               data-user-name="${user.fullName}"
             >
               <p class="font-bold">${user.fullName}</p>
-              <p class="text-sm text-gray-500">${user.lastMessage}</p>
+              <p class="text-sm text-gray-500">${user.lastMessage || ""}</p>
             </div>
           `
-            )
-            .join("");
+          )
+          .join("");
     
-          // Add click event listeners to each user
-          document.querySelectorAll("#chatList > div").forEach((userDiv) => {
-            userDiv.addEventListener("click", () => {
-              const userId = userDiv.getAttribute("data-user-id");
-              const userName = userDiv.getAttribute("data-user-name");
-              selectUser(userId, userName);
-            });
+        // Add click event listeners to each user
+        document.querySelectorAll("#chatList > div").forEach((userDiv) => {
+          userDiv.addEventListener("click", () => {
+            const userId = userDiv.getAttribute("data-user-id");
+            const userName = userDiv.getAttribute("data-user-name");
+            // Update URL without reloading
+            window.history.replaceState({}, '', `/chat?receiverId=${userId}`);
+            selectUser(userId, userName);
+            // Highlight selected
+            document.querySelectorAll("#chatList > div").forEach(div => div.classList.remove("bg-blue-100"));
+            userDiv.classList.add("bg-blue-100");
           });
+        });
+      }
+    
+      // Select a user to chat with
+      async function selectUser(userId, userName) {
+        selectedReceiverId = userId;
+        receiverName.textContent = userName;
+        chatMessages.innerHTML = ""; // Clear previous messages
+    
+        // Prevent chatting with yourself
+        if (selectedReceiverId === currentUserId) {
+          messageInput.disabled = true;
+          sendButton.disabled = true;
+          chatMessages.innerHTML = "<div class='text-center text-gray-500 mt-10'>You cannot chat with yourself.</div>";
+          return;
         }
     
-        // Select a user to chat with
-        async function selectUser(userId, userName) {
-          selectedReceiverId = userId;
-          receiverName.textContent = userName;
-          messageInput.disabled = false;
-          sendButton.disabled = false;
-          chatMessages.innerHTML = ""; // Clear previous messages
+        messageInput.disabled = false;
+        sendButton.disabled = false;
     
-          // Join the room for real-time messaging
-          socket.emit("joinRoom", { senderId: currentUserId, receiverId: selectedReceiverId });
+        // Join the room for real-time messaging
+        socket.emit("joinRoom", { senderId: currentUserId, receiverId: selectedReceiverId });
     
-          await fetchChatHistory();
-        }
+        await fetchChatHistory();
+      }
     
-        // Fetch chat history for the selected user
-        async function fetchChatHistory() {
-          try {
-            const response = await fetch(`/chat/chats?receiverId=${selectedReceiverId}`);
-            if (!response.ok) throw new Error("Failed to fetch chat history");
+      // Fetch all chats for the logged-in user
+      async function fetchAllChats() {
+        try {
+          const response = await fetch("/chat/chatUsers");
+          if (!response.ok) throw new Error("Failed to fetch chat users");
+          const users = await response.json();
+          renderChatList(users);
     
-            const { chats } = await response.json();
-            chats.forEach((chat) => {
-              const type = chat.senderId === currentUserId ? "sent" : "received";
-              appendMessage(chat.message, type, chat.timestamp);
-            });
-          } catch (error) {
-            console.error("Error fetching chat history:", error);
+          // Auto-select the contact if receiverId is in URL and not self
+          if (selectedReceiverId && selectedReceiverId !== currentUserId) {
+            const selectedUser = users.find(u => u.userId === selectedReceiverId);
+            if (selectedUser) {
+              selectUser(selectedUser.userId, selectedUser.fullName);
+              // Highlight selected
+              document.querySelectorAll("#chatList > div").forEach(div => {
+                if (div.getAttribute("data-user-id") === selectedReceiverId) {
+                  div.classList.add("bg-blue-100");
+                } else {
+                  div.classList.remove("bg-blue-100");
+                }
+              });
+            }
+          } else if (selectedReceiverId === currentUserId) {
+            // If trying to chat with self, show message
+            receiverName.textContent = "You cannot chat with yourself.";
+            messageInput.disabled = true;
+            sendButton.disabled = true;
+            chatMessages.innerHTML = "<div class='text-center text-gray-500 mt-10'>You cannot chat with yourself.</div>";
           }
+        } catch (error) {
+          console.error("Error fetching chat users:", error);
+          chatList.innerHTML =
+            "<p class='text-red-500'>Failed to load chats.</p>";
         }
+      }
     
-        // Append a message to the chat
-        function appendMessage(message, type, timestamp) {
-          const messageElement = document.createElement("div");
-          messageElement.className = `text-${type === "sent" ? "right" : "left"}`;
-          messageElement.innerHTML = `
-            <span class="inline-block ${
-              type === "sent" ? "bg-blue-500 text-white" : "bg-gray-300"
-            } px-4 py-2 rounded-2xl max-w-xs">
+      // Fetch chat history for the selected user
+      async function fetchChatHistory() {
+        try {
+          const response = await fetch(`/chat/chats?receiverId=${selectedReceiverId}`);
+          if (!response.ok) throw new Error("Failed to fetch chat history");
+    
+          const { chats } = await response.json();
+          chats.forEach((chat) => {
+            const type = chat.senderId === currentUserId ? "sent" : "received";
+            appendMessage(chat.message, type, chat.timestamp);
+          });
+        } catch (error) {
+          console.error("Error fetching chat history:", error);
+        }
+      }
+    
+      // Append a message to the chat
+      function appendMessage(message, type, timestamp) {
+        const messageElement = document.createElement("div");
+        messageElement.className = `text-${type === "sent" ? "right" : "left"}`;
+        messageElement.innerHTML = `
+            <span class="inline-block ${type === "sent" ? "bg-blue-500 text-white" : "bg-gray-300"
+          } px-4 py-2 rounded-2xl max-w-xs">
               ${message}
             </span>
             <div class="text-xs text-gray-500 mt-1">
               ${new Date(timestamp).toLocaleTimeString()}
             </div>
           `;
-          chatMessages.appendChild(messageElement);
-          chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
     
-        // Handle sending a new message
-        function sendMessage() {
-          const message = messageInput.value.trim();
-          if (!message) return;
+      // Handle sending a new message
+      function sendMessage() {
+        const message = messageInput.value.trim();
+        if (!message || selectedReceiverId === currentUserId) return;
     
-          socket.emit("personalMessage", {
-            senderId: currentUserId,
-            receiverId: selectedReceiverId,
-            message,
-          });
-          appendMessage(message, "sent", new Date());
-          messageInput.value = "";
-        }
+        socket.emit("personalMessage", {
+          senderId: currentUserId,
+          receiverId: selectedReceiverId,
+          message,
+        });
+        appendMessage(message, "sent", new Date());
+        messageInput.value = "";
+      }
     
-        // Add event listener for the "Send" button
-        sendButton.addEventListener("click", (e) => {
-          e.preventDefault();
+      // Add event listener for the "Send" button
+      sendButton.addEventListener("click", (e) => {
+        e.preventDefault();
+        sendMessage();
+      });
+    
+      // Add event listener for the "Enter" key
+      messageInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault(); // Prevent default form submission
           sendMessage();
-        });
-    
-        // Add event listener for the "Enter" key
-        messageInput.addEventListener("keydown", (e) => {
-          if (e.key === "Enter") {
-            e.preventDefault(); // Prevent default form submission
-            sendMessage();
-          }
-        });
-    
-        // Listen for new messages from the server
-        socket.on("personalMessage", ({ senderId, message, timestamp }) => {
-          if (senderId === selectedReceiverId) {
-            appendMessage(message, "received", timestamp);
-          }
-        });
-    
-        // Initialize the chat page
-        await fetchUserId();
-        if (currentUserId) {
-          await fetchAllChats();
-          if (selectedReceiverId) {
-            await fetchChatHistory();
-            socket.emit("joinRoom", { senderId: currentUserId, receiverId: selectedReceiverId });
-          }
         }
       });
+    
+      // Listen for new messages from the server
+      socket.on("personalMessage", ({ senderId, message, timestamp }) => {
+        if (senderId === selectedReceiverId) {
+          appendMessage(message, "received", timestamp);
+        }
+      });
+    
+      // Initialize the chat page
+      await fetchUserId();
+      await fetchAllChats();
+    
+      if (!selectedReceiverId) {
+        receiverName.textContent = "Select a user to chat";
+        messageInput.disabled = true;
+        sendButton.disabled = true;
+      }
+    });
     </script>
-  </body>
+</body>
+
 </html>

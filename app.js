@@ -37,11 +37,11 @@ app.get("/", (req, res) => {
 });
 
 // Serve the lostfound page
-app.get("/lostfound", (req, res) => {
+app.get("/lostfound",Authentication, (req, res) => {
   res.sendFile(__dirname + "/Frontend/lostfound.html");
 });
 
-app.get("/lostfound.js", (req, res) => {
+app.get("/lostfound.js",Authentication, (req, res) => {
   res.sendFile(__dirname + "/Frontend/lostfound.js");
 });
 

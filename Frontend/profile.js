@@ -1,22 +1,331 @@
-const navButtons = document.querySelectorAll('.nav-btn');
+document.addEventListener('DOMContentLoaded', () => {
+  const navButtons = document.querySelectorAll('.nav-btn');
   const mainContent = document.getElementById('main-content');
   const logoutBtn = document.querySelector('.logout-btn');
   let currentUserEmail = ''; // Variable to hold the user's email
+  let initialValues = {};
+
+  // Function to set up the profile content HTML
+  function setupProfileContent() {
+    mainContent.innerHTML = `
+      <div class="bg-gray-100 p-6 rounded-lg shadow-sm">
+        <h2 class="text-2xl font-bold mb-6">User Settings</h2>
+      
+        <!-- Tabs and Edit Button Container -->
+        <div class="flex justify-between mb-6">
+          <div class="flex space-x-2">
+            <button id="personalInfoBtn" class="bg-red-600 text-white px-4 py-2 rounded font-semibold">Personal Information</button>
+            <button id="passwordBtn" class="bg-gray-800 text-white px-4 py-2 rounded font-semibold">Password</button>
+          </div>
+          <button id="edit-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Edit</button>
+        </div>
+      
+        <!-- Personal Info Form -->
+        <div id="personalInfo" class="tab-content">
+          <form id="profile-form" class="space-y-4">
+            <div>
+              <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+              <input type="text" id="firstName" placeholder="First Name" disabled
+                class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+        
+            <div>
+              <label for="lastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+              <input type="text" id="lastName" placeholder="Last Name" disabled
+                class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+        
+            <div>
+              <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <input type="email" id="email" placeholder="Email" disabled
+                class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 focus:outline-none cursor-not-allowed" />
+            </div>
+        
+            <div>
+              <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+              <input type="text" id="phone" placeholder="Enter Phone Number" disabled
+                class="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+        
+            <button type="submit" id="update-btn"
+              class="mt-4 bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2 rounded shadow-sm hidden">
+              Update My Details
+            </button>
+          </form>
+        </div>
+
+        <!-- Password Form -->
+        <div id="password" class="tab-content hidden">
+          <form id="password-form" class="space-y-4">
+            <div>
+              <label for="currentPassword" class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+              <input type="password" id="currentPassword" placeholder="Enter current password" required
+                class="w-full border border-gray-300 rounded px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+
+            <div>
+              <label for="newPassword" class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+              <input type="password" id="newPassword" placeholder="Enter new password" required
+                class="w-full border border-gray-300 rounded px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+
+            <div>
+              <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+              <input type="password" id="confirmPassword" placeholder="Confirm new password" required
+                class="w-full border border-gray-300 rounded px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+
+            <button type="submit" id="change-password-btn"
+              class="mt-4 bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2 rounded shadow-sm">
+              Change Password
+            </button>
+          </form>
+        </div>
+      </div>`;
+
+    // Initialize the page after setting up content
+    initializeProfilePage();
+    loadProfile();
+  }
+
+  // Function to load profile data
+  async function loadProfile() {
+    try {
+      console.log('Starting profile fetch...');
+      const res = await fetch("/user/profile", {
+        method: "GET",
+        credentials: "include",
+      });
+      
+      if (!res.ok) {
+        console.error('Response not OK:', {
+          status: res.status,
+          statusText: res.statusText
+        });
+        const text = await res.text();
+        console.error('Error response body:', text);
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      
+      const data = await res.json();
+      console.log('Profile data:', data);
+      
+      // Set form values
+      document.getElementById("firstName").value = data.firstName || '';
+      document.getElementById("lastName").value = data.lastName || '';
+      document.getElementById("email").value = data.email || '';
+      document.getElementById("phone").value = data.phone || '';
+      
+      // Ensure all fields are disabled initially
+      ["firstName", "lastName", "phone"].forEach(id => {
+        document.getElementById(id).disabled = true;
+      });
+      // Email should always be disabled
+      document.getElementById("email").disabled = true;
+    } catch (err) {
+      console.error("Failed to load profile:", err);
+      alert("Failed to load profile data. Please try refreshing the page.");
+    }
+  }
+
+  // Function to initialize all profile page event listeners
+  function initializeProfilePage() {
+    const editBtn = document.getElementById("edit-btn");
+    const updateBtn = document.getElementById("update-btn");
+    const profileForm = document.getElementById("profile-form");
+    const personalInfoBtn = document.getElementById("personalInfoBtn");
+    const passwordBtn = document.getElementById("passwordBtn");
+    const personalInfoSection = document.getElementById("personalInfo");
+    const passwordSection = document.getElementById("password");
+    const passwordForm = document.getElementById("password-form");
+
+    // Initialize edit button functionality
+    editBtn.addEventListener("click", () => {
+      // Store current values
+      initialValues = {
+        firstName: document.getElementById("firstName").value,
+        lastName: document.getElementById("lastName").value,
+        phone: document.getElementById("phone").value
+      };
+
+      // Enable editable fields
+      ["firstName", "lastName", "phone"].forEach(id => {
+        const input = document.getElementById(id);
+        input.disabled = false;
+        input.classList.remove("bg-gray-100");
+        input.classList.add("bg-white");
+      });
+
+      // Show update button and hide edit button
+      updateBtn.classList.remove("hidden");
+      editBtn.classList.add("hidden");
+    });
+
+    // Initialize form submission
+    profileForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const updatedValues = {
+        firstName: document.getElementById("firstName").value,
+        lastName: document.getElementById("lastName").value,
+        phone: document.getElementById("phone").value
+      };
+
+      // Check if any values have changed
+      const hasChanges = Object.keys(updatedValues).some(
+        key => updatedValues[key] !== initialValues[key]
+      );
+
+      if (!hasChanges) {
+        alert("No changes detected");
+        return;
+      }
+
+      try {
+        const response = await fetch("/user/update-profile", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(updatedValues),
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+          alert("Profile updated successfully!");
+          
+          // Disable fields and restore styling
+          ["firstName", "lastName", "phone"].forEach(id => {
+            const input = document.getElementById(id);
+            input.disabled = true;
+            input.classList.remove("bg-white");
+            input.classList.add("bg-gray-100");
+          });
+
+          // Hide update button and show edit button
+          updateBtn.classList.add("hidden");
+          editBtn.classList.remove("hidden");
+
+          // Update initial values
+          initialValues = { ...updatedValues };
+        } else {
+          alert(result.message || "Failed to update profile");
+        }
+      } catch (err) {
+        console.error("Error updating profile:", err);
+        alert("Failed to update profile. Please try again.");
+      }
+    });
+
+    // Initialize tab switching
+    personalInfoBtn.addEventListener("click", () => {
+      // Update button styles
+      personalInfoBtn.classList.remove("bg-gray-800");
+      personalInfoBtn.classList.add("bg-red-600");
+      passwordBtn.classList.remove("bg-red-600");
+      passwordBtn.classList.add("bg-gray-800");
+      
+      // Show/hide sections
+      personalInfoSection.classList.remove("hidden");
+      passwordSection.classList.add("hidden");
+      
+      // Show edit button
+      editBtn.classList.remove("hidden");
+    });
+
+    passwordBtn.addEventListener("click", () => {
+      // Update button styles
+      passwordBtn.classList.remove("bg-gray-800");
+      passwordBtn.classList.add("bg-red-600");
+      personalInfoBtn.classList.remove("bg-red-600");
+      personalInfoBtn.classList.add("bg-gray-800");
+      
+      // Show/hide sections
+      passwordSection.classList.remove("hidden");
+      personalInfoSection.classList.add("hidden");
+      
+      // Hide edit button
+      editBtn.classList.add("hidden");
+    });
+
+    // Initialize password form submission
+    passwordForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const currentPassword = document.getElementById("currentPassword").value;
+      const newPassword = document.getElementById("newPassword").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+
+      // Validate passwords
+      if (newPassword !== confirmPassword) {
+        alert("New password & Confirm password do not match!");
+        return;
+      }
+
+      if (newPassword.length < 6) {
+        alert("New password must be at least 6 characters long!");
+        return;
+      }
+
+      try {
+        const response = await fetch("/user/change-password", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            currentPassword,
+            newPassword
+          }),
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+          alert("Password changed successfully!");
+          passwordForm.reset();
+          // Switch back to personal info tab
+          personalInfoBtn.click();
+        } else {
+          alert(result.message || "Failed to change password");
+        }
+      } catch (err) {
+        console.error("Error changing password:", err);
+        alert("Failed to change password. Please try again.");
+      }
+    });
+  }
+
+  // Function to close edit form
+  function closeEditForm() {
+    const editForm = document.getElementById('edit-item-form');
+    if (editForm) {
+      document.getElementById('edit-item-form-content').reset();
+      editForm.classList.add('hidden');
+    }
+  }
+
+  // Add event listener for cancel button
+  document.addEventListener('click', function(event) {
+    if (event.target.id === 'cancel-edit-btn' || 
+        (event.target.onclick && event.target.onclick.toString().includes('closeEditForm'))) {
+      closeEditForm();
+    }
+  });
 
   // Handle navigation button clicks
   navButtons.forEach(btn => {
     btn.addEventListener('click', async () => {
-      // Remove active class from all buttons and add to the clicked one
       navButtons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
 
       const tab = btn.getAttribute('data-tab');
 
       if (tab === 'profile') {
-        mainContent.innerHTML = `
-        <h2>Welcome to your Profile</h2>
-        <p>This is where your profile information will appear.</p>
-      `;
+        setupProfileContent();
       }
 
       if (tab === 'items') {
@@ -72,11 +381,10 @@ const navButtons = document.querySelectorAll('.nav-btn');
               });
             });
 
-            // Edit button functionality
             document.querySelectorAll('.edit-btn').forEach(button => {
               button.addEventListener('click', () => {
                 const itemId = button.getAttribute('data-id');
-                openEditForm(itemId); // Open the edit form for the selected item
+                openEditForm(itemId);
               });
             });
           }
@@ -87,13 +395,14 @@ const navButtons = document.querySelectorAll('.nav-btn');
       }
 
       if (tab === 'dashboard') {
-        window.location.href = '/'; // Navigate to dashboard
+        window.location.href = '/';
       }
     });
   });
 
   // Select the form and relevant elements
   const editItemForm = document.getElementById('edit-item-form-content');
+  const cancelEditBtn = document.getElementById('cancel-edit-btn');
   let currentItemId = ''; // Variable to store the current item ID being edited
 
   // Function to open and populate the edit form with item details
@@ -105,7 +414,7 @@ const navButtons = document.querySelectorAll('.nav-btn');
 
     fetch(`http://localhost:3000/user/items/${itemId}`, {
       method: 'GET',
-      credentials: 'include', // Ensure the session is sent
+      credentials: 'include',
     })
       .then(response => response.json())
       .then(data => {
@@ -115,8 +424,8 @@ const navButtons = document.querySelectorAll('.nav-btn');
           document.getElementById('item-description').value = data.item.item_description;
           document.getElementById('item-status').value = data.item.status;
 
-          // Show the edit form (make sure to remove 'hidden' class or set display to block)
-          document.getElementById('edit-item-form').classList.remove('hidden'); // Show the form
+          // Show the edit form
+          document.getElementById('edit-item-form').classList.remove('hidden');
         } else {
           alert('Item not found!');
         }
@@ -129,31 +438,40 @@ const navButtons = document.querySelectorAll('.nav-btn');
 
   // Handle the form submission
   editItemForm.addEventListener('submit', function (event) {
-    event.preventDefault(); // Prevent the form from submitting the traditional way
+    event.preventDefault();
 
     const updatedItem = {
       item_name: document.getElementById('item-name').value,
       item_description: document.getElementById('item-description').value,
-      status: document.getElementById('item-status').value, // Status remains read-only
+      status: document.getElementById('item-status').value,
     };
 
     console.log('Updated item data:', updatedItem);
 
-    // Send the updated data to the backend to update the item
     fetch(`http://localhost:3000/user/items/${currentItemId}`, {
-      method: 'PUT', // Use PUT to update the item
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(updatedItem),
-      credentials: 'include', // Include cookies for session management
+      credentials: 'include',
     })
       .then(response => response.json())
       .then(data => {
         if (data.success) {
           alert('Item updated successfully!');
-          closeEditForm(); // Close the form after updating
-          // Optionally, refresh the page or the list of items
+          
+          // Update the UI for the edited item
+          const itemCard = document.querySelector(`[data-id="${currentItemId}"]`).closest('.item-card');
+          if (itemCard) {
+            const itemInfo = itemCard.querySelector('.item-info');
+            itemInfo.innerHTML = `
+              <h3 class="font-bold">${updatedItem.item_name}</h3>
+              <p>${updatedItem.item_description}</p>
+            `;
+          }
+          
+          closeEditForm();
         } else {
           alert('Failed to update item. Please try again.');
         }
@@ -164,12 +482,11 @@ const navButtons = document.querySelectorAll('.nav-btn');
       });
   });
 
-  // Cancel button to close the form
-  function closeEditForm() {
-  document.getElementById('edit-item-form-content').reset(); // Reset the form
-  document.getElementById('edit-item-form').classList.add('hidden'); // Hide the form
-}
   // Logout button functionality
   logoutBtn.addEventListener('click', () => {
     window.location.href = '/logout';
   });
+
+  // Initial setup - Load profile content immediately
+  setupProfileContent();
+});

@@ -6,7 +6,77 @@ const { ObjectId } = require("mongodb");
 const jwt = require("jsonwebtoken");
 const { Authentication } = require("./jwtAuth");
 
-// Backend code that sends the user's email in the response
+
+// GET route to fetch user profile info
+router.get("/profile", Authentication, async (req, res) => {
+  const db = getDB();
+  const userEmail = req.user.username;
+
+  try {
+    const user = await db.collection("users").findOne({ username: userEmail });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({
+      firstName: user.firstname || "",
+      lastName: user.lastname || "",
+      email: user.username || "",
+      phone: user.phone || "",
+    });
+  } catch (err) {
+    console.error("Error fetching user profile:", err);
+    res.status(500).json({ message: "Failed to fetch user profile" });
+  }
+});
+
+
+
+
+// PUT route to update user profile (excluding email)
+router.put("/update-profile", Authentication, async (req, res) => {
+  const db = getDB();
+  const userEmail = req.user.username; // email from JWT
+  const { firstName, lastName, phone } = req.body;
+
+  try {
+    // First check if user exists
+    const user = await db.collection("users").findOne({ username: userEmail });
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    const result = await db.collection("users").updateOne(
+      { username: userEmail },
+      { 
+        $set: { 
+          firstname: firstName,  // match the database field names
+          lastname: lastName,
+          phone: phone 
+        } 
+      }
+    );
+
+    if (result.modifiedCount === 1) {
+      res.json({ success: true, message: "Profile updated successfully" });
+    } else if (result.matchedCount === 1 && result.modifiedCount === 0) {
+      res.json({ success: false, message: "No changes made" });
+    } else {
+      res.status(400).json({ success: false, message: "Failed to update profile" });
+    }
+  } catch (err) {
+    console.error("Error updating profile:", err);
+    res.status(500).json({ success: false, message: "Failed to update profile" });
+  }
+});
+
+
+
+
+
+
+// that sends the user's email in the response
 
 router.get("/items", Authentication, async (req, res) => {
     const db = getDB();
@@ -82,6 +152,39 @@ router.put("/items/:id", Authentication, async (req, res) => {
   }
 });
 
+// PUT route to change password
+router.put("/change-password", Authentication, async (req, res) => {
+  const db = getDB();
+  const userEmail = req.user.username;
+  const { currentPassword, newPassword } = req.body;
 
+  try {
+    // First verify the current password
+    const user = await db.collection("users").findOne({ username: userEmail });
+    
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    if (user.password !== currentPassword) {
+      return res.status(400).json({ success: false, message: "Current password is incorrect" });
+    }
+
+    // Update the password
+    const result = await db.collection("users").updateOne(
+      { username: userEmail },
+      { $set: { password: newPassword } }
+    );
+
+    if (result.modifiedCount === 1) {
+      res.json({ success: true, message: "Password updated successfully" });
+    } else {
+      res.status(400).json({ success: false, message: "Failed to update password" });
+    }
+  } catch (err) {
+    console.error("Error changing password:", err);
+    res.status(500).json({ success: false, message: "Failed to change password" });
+  }
+});
 
 module.exports = router;
