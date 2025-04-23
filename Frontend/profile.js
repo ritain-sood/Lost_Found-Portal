@@ -331,7 +331,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (tab === 'items') {
         try {
           // Fetch items from the API and get the user's email as part of the response
-          const response = await fetch("http://localhost:3000/user/items", {
+          const response = await fetch("/user/items", {
             credentials: "include" // Send cookies!
           });
           const data = await response.json();
@@ -366,7 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const id = button.getAttribute('data-id');
                 if (confirm('Are you sure you want to delete this item?')) {
                   try {
-                    const response = await fetch(`http://localhost:3000/user/items/${id}`, {
+                    const response = await fetch(`/user/items/${id}`, {
                       method: 'DELETE',
                       credentials: 'include',
                     });
@@ -412,7 +412,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Opening edit form for item ID:', itemId);
     
 
-    fetch(`http://localhost:3000/user/items/${itemId}`, {
+    fetch(`user/items/${itemId}`, {
       method: 'GET',
       credentials: 'include',
     })
@@ -448,7 +448,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log('Updated item data:', updatedItem);
 
-    fetch(`http://localhost:3000/user/items/${currentItemId}`, {
+    fetch(`/user/items/${currentItemId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
