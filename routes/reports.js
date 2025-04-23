@@ -24,7 +24,9 @@ const upload = multer({ storage });
 // Handle report submissions
 router.post("/reports", upload.single("item_image"), async (req, res) => {
   try {
+    console.log("Request body:", req.body); // Debugging
     console.log("Uploaded File:", req.file); // Debugging
+
     const dbinstance = getDB();
     const {
       status,
@@ -36,7 +38,17 @@ router.post("/reports", upload.single("item_image"), async (req, res) => {
       reporter_email,
       reporter_contact,
       terms,
+      custom_date
     } = req.body;
+
+    // Validate required fields
+    if (!status || !location || !category || !item_name || !item_description || 
+        !reporter_name || !reporter_email || !reporter_contact) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "All fields are required" 
+      });
+    }
 
     // Handle date selection
     let reportedDate;
@@ -53,9 +65,7 @@ router.post("/reports", upload.single("item_image"), async (req, res) => {
         .subtract(2, "days")
         .format("YYYY-MM-DD");
     } else {
-      reportedDate =
-        req.body.custom_date ||
-        moment().tz("Asia/Kolkata").format("YYYY-MM-DD");
+      reportedDate = custom_date || moment().tz("Asia/Kolkata").format("YYYY-MM-DD");
     }
 
     const image = req.file ? "/uploads/" + req.file.filename : null;
@@ -75,10 +85,21 @@ router.post("/reports", upload.single("item_image"), async (req, res) => {
       createdAt: moment().tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss"),
     };
 
-    await dbinstance.collection("items").insertOne(newItem);
-    res.redirect("/auth/dashboard");
+    console.log("Inserting new item:", newItem); // Debugging
+
+    const result = await dbinstance.collection("items").insertOne(newItem);
+    
+    if (result.insertedId) {
+      res.json({ success: true, message: "Item reported successfully" });
+    } else {
+      throw new Error("Failed to insert item into database");
+    }
   } catch (error) {
-    res.status(500).json({ message: "Error: " + error.message });
+    console.error("Error in report submission:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: error.message || "An error occurred while processing your request" 
+    });
   }
 });
 

@@ -119,31 +119,74 @@ document.querySelectorAll(".category").forEach((category) => {
 document.querySelector(".btn").addEventListener("click", function (event) {
   event.preventDefault();
 
-  let terms = document.getElementById("terms");
-  let status = document.getElementById("status").value.trim();
-  let category = document.getElementById("selectedCategoryInput").value.trim();
-  let itemName = document.getElementById("itemName").value.trim();
-  let itemDescription = document.getElementById("itemDescription").value.trim();
-  let location = document.querySelector('textarea[name="location"]').value.trim();
+  // Get all form values
+  const formData = new FormData(document.getElementById("reportForm"));
+  
+  // Get user data from the pre-filled fields
+  const reporterName = document.getElementById("name").value;
+  const reporterEmail = document.getElementById("email").value;
+  const reporterContact = document.getElementById("contactInfo").value;
 
-  // Check required fields (excluding pre-filled user info)
-  if (!itemName || !itemDescription || !category || !location) {
+  // Validate required fields
+  if (!formData.get("item_name") || !formData.get("item_description") || 
+      !formData.get("category") || !formData.get("location")) {
     alert("Please fill in all required fields: Item Name, Description, Location, and Category.");
     return;
   }
 
-  if (!status) {
+  if (!formData.get("status")) {
     alert("Please select the status (Lost or Found).");
     return;
   }
 
-  if (!terms.checked) {
+  if (!document.getElementById("terms").checked) {
     alert("Please accept the terms and conditions before submitting.");
     return;
   }
 
-  // Submit the form
-  document.getElementById("reportForm").submit();
+  // Ensure user data is included
+  formData.set("reporter_name", reporterName);
+  formData.set("reporter_email", reporterEmail);
+  formData.set("reporter_contact", reporterContact);
+
+  // Log the form data for debugging
+  console.log("Submitting form with data:", {
+    reporterName,
+    reporterEmail,
+    reporterContact,
+    itemName: formData.get("item_name"),
+    category: formData.get("category"),
+    status: formData.get("status"),
+    location: formData.get("location"),
+    date: formData.get("custom_date")
+  });
+
+  // Submit the form data
+  fetch("/api/reports", {
+    method: "POST",
+    body: formData,
+    credentials: "include"
+  })
+  .then(response => {
+    if (!response.ok) {
+      return response.json().then(err => {
+        throw new Error(err.message || 'Network response was not ok');
+      });
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (data.success) {
+      // alert("Item reported successfully!");
+      window.location.href = "/auth/dashboard";
+    } else {
+      alert(data.message || "Failed to report item. Please try again.");
+    }
+  })
+  .catch(error => {
+    console.error("Error details:", error);
+    alert(`Error submitting form: ${error.message}`);
+  });
 });
 
 // Function to update status selection
