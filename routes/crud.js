@@ -189,4 +189,29 @@ router.put("/change-password", Authentication, async (req, res) => {
   }
 });
 
+
+
+router.put("/resolved/:id", Authentication, async (req, res) => {
+  const db = getDB();
+  const { id } = req.params;
+  const { status } = req.body;
+  
+  try {
+    const result = await db.collection("items").updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { status: "Resolved" } }
+    );
+
+    if (result.modifiedCount === 1) {
+      res.json({ success: true, message: "Item status updated to Resolved" });
+    } else {
+      res.status(404).json({ success: false, message: "Item not found or no changes made" });
+    }
+  } catch (err) {
+    console.error("Error updating item status:", err);
+    res.status(500).json({ success: false, error: "Failed to update item status" });
+  }
+});
+
+
 module.exports = router;

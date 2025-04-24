@@ -1,8 +1,8 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const navButtons = document.querySelectorAll('.nav-btn');
-  const mainContent = document.getElementById('main-content');
-  const logoutBtn = document.querySelector('.logout-btn');
-  let currentUserEmail = ''; // Variable to hold the user's email
+document.addEventListener("DOMContentLoaded", () => {
+  const navButtons = document.querySelectorAll(".nav-btn");
+  const mainContent = document.getElementById("main-content");
+  const logoutBtn = document.querySelector(".logout-btn");
+  let currentUserEmail = ""; // Variable to hold the user's email
   let initialValues = {};
 
   // Function to set up the profile content HTML
@@ -91,33 +91,33 @@ document.addEventListener('DOMContentLoaded', () => {
   // Function to load profile data
   async function loadProfile() {
     try {
-      console.log('Starting profile fetch...');
+      console.log("Starting profile fetch...");
       const res = await fetch("/user/profile", {
         method: "GET",
         credentials: "include",
       });
-      
+
       if (!res.ok) {
-        console.error('Response not OK:', {
+        console.error("Response not OK:", {
           status: res.status,
-          statusText: res.statusText
+          statusText: res.statusText,
         });
         const text = await res.text();
-        console.error('Error response body:', text);
+        console.error("Error response body:", text);
         throw new Error(`HTTP error! status: ${res.status}`);
       }
-      
+
       const data = await res.json();
-      console.log('Profile data:', data);
-      
+      console.log("Profile data:", data);
+
       // Set form values
-      document.getElementById("firstName").value = data.firstName || '';
-      document.getElementById("lastName").value = data.lastName || '';
-      document.getElementById("email").value = data.email || '';
-      document.getElementById("phone").value = data.phone || '';
-      
+      document.getElementById("firstName").value = data.firstName || "";
+      document.getElementById("lastName").value = data.lastName || "";
+      document.getElementById("email").value = data.email || "";
+      document.getElementById("phone").value = data.phone || "";
+
       // Ensure all fields are disabled initially
-      ["firstName", "lastName", "phone"].forEach(id => {
+      ["firstName", "lastName", "phone"].forEach((id) => {
         document.getElementById(id).disabled = true;
       });
       // Email should always be disabled
@@ -145,11 +145,11 @@ document.addEventListener('DOMContentLoaded', () => {
       initialValues = {
         firstName: document.getElementById("firstName").value,
         lastName: document.getElementById("lastName").value,
-        phone: document.getElementById("phone").value
+        phone: document.getElementById("phone").value,
       };
 
       // Enable editable fields
-      ["firstName", "lastName", "phone"].forEach(id => {
+      ["firstName", "lastName", "phone"].forEach((id) => {
         const input = document.getElementById(id);
         input.disabled = false;
         input.classList.remove("bg-gray-100");
@@ -168,12 +168,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const updatedValues = {
         firstName: document.getElementById("firstName").value,
         lastName: document.getElementById("lastName").value,
-        phone: document.getElementById("phone").value
+        phone: document.getElementById("phone").value,
       };
 
       // Check if any values have changed
       const hasChanges = Object.keys(updatedValues).some(
-        key => updatedValues[key] !== initialValues[key]
+        (key) => updatedValues[key] !== initialValues[key]
       );
 
       if (!hasChanges) {
@@ -192,12 +192,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const result = await response.json();
-        
+
         if (result.success) {
           alert("Profile updated successfully!");
-          
+
           // Disable fields and restore styling
-          ["firstName", "lastName", "phone"].forEach(id => {
+          ["firstName", "lastName", "phone"].forEach((id) => {
             const input = document.getElementById(id);
             input.disabled = true;
             input.classList.remove("bg-white");
@@ -226,11 +226,11 @@ document.addEventListener('DOMContentLoaded', () => {
       personalInfoBtn.classList.add("bg-red-600");
       passwordBtn.classList.remove("bg-red-600");
       passwordBtn.classList.add("bg-gray-800");
-      
+
       // Show/hide sections
       personalInfoSection.classList.remove("hidden");
       passwordSection.classList.add("hidden");
-      
+
       // Show edit button
       editBtn.classList.remove("hidden");
     });
@@ -241,11 +241,11 @@ document.addEventListener('DOMContentLoaded', () => {
       passwordBtn.classList.add("bg-red-600");
       personalInfoBtn.classList.remove("bg-red-600");
       personalInfoBtn.classList.add("bg-gray-800");
-      
+
       // Show/hide sections
       passwordSection.classList.remove("hidden");
       personalInfoSection.classList.add("hidden");
-      
+
       // Hide edit button
       editBtn.classList.add("hidden");
     });
@@ -278,12 +278,12 @@ document.addEventListener('DOMContentLoaded', () => {
           credentials: "include",
           body: JSON.stringify({
             currentPassword,
-            newPassword
+            newPassword,
           }),
         });
 
         const result = await response.json();
-        
+
         if (result.success) {
           alert("Password changed successfully!");
           passwordForm.reset();
@@ -301,48 +301,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Function to close edit form
   function closeEditForm() {
-    const editForm = document.getElementById('edit-item-form');
+    const editForm = document.getElementById("edit-item-form");
     if (editForm) {
-      document.getElementById('edit-item-form-content').reset();
-      editForm.classList.add('hidden');
+      document.getElementById("edit-item-form-content").reset();
+      editForm.classList.add("hidden");
     }
   }
 
   // Add event listener for cancel button
-  document.addEventListener('click', function(event) {
-    if (event.target.id === 'cancel-edit-btn' || 
-        (event.target.onclick && event.target.onclick.toString().includes('closeEditForm'))) {
+  document.addEventListener("click", function (event) {
+    if (
+      event.target.id === "cancel-edit-btn" ||
+      (event.target.onclick &&
+        event.target.onclick.toString().includes("closeEditForm"))
+    ) {
       closeEditForm();
     }
   });
 
   // Handle navigation button clicks
-  navButtons.forEach(btn => {
-    btn.addEventListener('click', async () => {
-      navButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+  navButtons.forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      navButtons.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
 
-      const tab = btn.getAttribute('data-tab');
+      const tab = btn.getAttribute("data-tab");
 
-      if (tab === 'profile') {
+      if (tab === "profile") {
         setupProfileContent();
       }
 
-      if (tab === 'items') {
+      if (tab === "items") {
         try {
           // Fetch items from the API and get the user's email as part of the response
           const response = await fetch("/user/items", {
-            credentials: "include" // Send cookies!
+            credentials: "include", // Send cookies!
           });
           const data = await response.json();
           currentUserEmail = data.userEmail; // Capture the user's email from the response
 
           // Check if there's a message saying "No Items Listed"
-          if (data.message === 'No Items Listed') {
+          if (data.message === "No Items Listed") {
             mainContent.innerHTML = `<p>No Items Listed</p>`;
           } else {
-            let itemsHTML = '';
-            data.items.forEach(item => {
+            let itemsHTML = "";
+            data.items.forEach((item) => {
+              const isResolved = item.status === "Resolved";
               itemsHTML += `
               <div class="item-card">
                 <img src="${item.image}" class="item-image" alt="Item">
@@ -351,8 +355,11 @@ document.addEventListener('DOMContentLoaded', () => {
                   <p>${item.item_description}</p>
                 </div>
                 <span class="status-tag ${item.status.toLowerCase()}">● ${item.status}</span>
-                <span></span>
-                <button class="resolved-btn ml-2" data-id="${item._id}">Resolved</button>
+                <button class="resolved-btn ml-2 ${isResolved ? 'disabled' : ''}" 
+                        data-id="${item._id}"
+                        ${isResolved ? 'disabled' : ''}>
+                  Resolved
+                </button>
                 <div class="card-actions">
                   <button class="edit-btn" data-id="${item._id}">Edit</button>
                   <button class="delete-btn" data-id="${item._id}">Delete</button>
@@ -362,131 +369,187 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             mainContent.innerHTML = itemsHTML;
 
+            // Add CSS for disabled button
+            const style = document.createElement('style');
+            style.textContent = `
+              .resolved-btn.disabled {
+                background-color: #cccccc;
+                cursor: not-allowed;
+                opacity: 0.6;
+              }
+              .status-tag.resolved {
+                background-color: #2196F3;
+              }
+            `;
+            document.head.appendChild(style);
+
             // Attach event listeners to dynamically created buttons
-            document.querySelectorAll('.delete-btn').forEach(button => {
-              button.addEventListener('click', async () => {
-                const id = button.getAttribute('data-id');
-                if (confirm('Are you sure you want to delete this item?')) {
+            document.querySelectorAll(".delete-btn").forEach((button) => {
+              button.addEventListener("click", async () => {
+                const id = button.getAttribute("data-id");
+                if (confirm("Are you sure you want to delete this item?")) {
                   try {
                     const response = await fetch(`/user/items/${id}`, {
-                      method: 'DELETE',
-                      credentials: 'include',
+                      method: "DELETE",
+                      credentials: "include",
                     });
                     const result = await response.json();
-                    alert(result.message || 'Item deleted');
-                    button.closest('.item-card').remove(); // Remove the card from DOM
+                    alert(result.message || "Item deleted");
+                    button.closest(".item-card").remove(); // Remove the card from DOM
                   } catch (err) {
-                    console.error('Delete failed:', err);
-                    alert('Failed to delete item.');
+                    console.error("Delete failed:", err);
+                    alert("Failed to delete item.");
                   }
                 }
               });
             });
 
-            document.querySelectorAll('.edit-btn').forEach(button => {
-              button.addEventListener('click', () => {
-                const itemId = button.getAttribute('data-id');
+            document.querySelectorAll(".edit-btn").forEach((button) => {
+              button.addEventListener("click", () => {
+                const itemId = button.getAttribute("data-id");
                 openEditForm(itemId);
+              });
+            });
+
+            document.querySelectorAll(".resolved-btn").forEach((button) => {
+              button.addEventListener("click", async () => {
+                const id = button.getAttribute("data-id");
+                if (confirm('Are you sure you want to update the status to "Resolved"?')) {
+                  try {
+                    const response = await fetch(`/user/resolved/${id}`, {
+                      method: "PUT",
+                      credentials: "include",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({
+                        status: "Resolved"
+                      })
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                      alert(result.message || "Item Status Updated");
+                      // Update the UI
+                      const itemCard = button.closest(".item-card");
+                      if (itemCard) {
+                        const statusTag = itemCard.querySelector(".status-tag");
+                        if (statusTag) {
+                          statusTag.textContent = "● Resolved";
+                          statusTag.className = "status-tag resolved";
+                        }
+                        // Hide the resolved button after status is updated
+                        button.style.display = "none";
+                      }
+                    } else {
+                      alert(result.message || "Failed to update status");
+                    }
+                  } catch (err) {
+                    console.error("Status Update failed:", err);
+                    alert("Status Update failed. Please try again.");
+                  }
+                }
               });
             });
           }
         } catch (error) {
-          console.error('Error fetching items:', error);
+          console.error("Error fetching items:", error);
           mainContent.innerHTML = `<p>Error loading items. Please try again later.</p>`;
         }
       }
 
-      if (tab === 'dashboard') {
-        window.location.href = '/';
+      if (tab === "dashboard") {
+        window.location.href = "/";
       }
     });
   });
 
   // Select the form and relevant elements
-  const editItemForm = document.getElementById('edit-item-form-content');
-  const cancelEditBtn = document.getElementById('cancel-edit-btn');
-  let currentItemId = ''; // Variable to store the current item ID being edited
+  const editItemForm = document.getElementById("edit-item-form-content");
+  const cancelEditBtn = document.getElementById("cancel-edit-btn");
+  let currentItemId = ""; // Variable to store the current item ID being edited
 
   // Function to open and populate the edit form with item details
   function openEditForm(itemId) {
     currentItemId = itemId;
 
-    console.log('Opening edit form for item ID:', itemId);
-    
+    console.log("Opening edit form for item ID:", itemId);
 
     fetch(`user/items/${itemId}`, {
-      method: 'GET',
-      credentials: 'include',
+      method: "GET",
+      credentials: "include",
     })
-      .then(response => response.json())
-      .then(data => {
+      .then((response) => response.json())
+      .then((data) => {
         if (data.item) {
           // Populate the form fields with the fetched item details
-          document.getElementById('item-name').value = data.item.item_name;
-          document.getElementById('item-description').value = data.item.item_description;
-          document.getElementById('item-status').value = data.item.status;
+          document.getElementById("item-name").value = data.item.item_name;
+          document.getElementById("item-description").value =
+            data.item.item_description;
+          document.getElementById("item-status").value = data.item.status;
 
           // Show the edit form
-          document.getElementById('edit-item-form').classList.remove('hidden');
+          document.getElementById("edit-item-form").classList.remove("hidden");
         } else {
-          alert('Item not found!');
+          alert("Item not found!");
         }
       })
-      .catch(error => {
-        console.error('Error fetching item details:', error);
-        alert('Error loading item details.');
+      .catch((error) => {
+        console.error("Error fetching item details:", error);
+        alert("Error loading item details.");
       });
   }
 
   // Handle the form submission
-  editItemForm.addEventListener('submit', function (event) {
+  editItemForm.addEventListener("submit", function (event) {
     event.preventDefault();
 
     const updatedItem = {
-      item_name: document.getElementById('item-name').value,
-      item_description: document.getElementById('item-description').value,
-      status: document.getElementById('item-status').value,
+      item_name: document.getElementById("item-name").value,
+      item_description: document.getElementById("item-description").value,
+      status: document.getElementById("item-status").value,
     };
 
-    console.log('Updated item data:', updatedItem);
+    console.log("Updated item data:", updatedItem);
 
     fetch(`/user/items/${currentItemId}`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(updatedItem),
-      credentials: 'include',
+      credentials: "include",
     })
-      .then(response => response.json())
-      .then(data => {
+      .then((response) => response.json())
+      .then((data) => {
         if (data.success) {
-          alert('Item updated successfully!');
-          
+          alert("Item updated successfully!");
+
           // Update the UI for the edited item
-          const itemCard = document.querySelector(`[data-id="${currentItemId}"]`).closest('.item-card');
+          const itemCard = document
+            .querySelector(`[data-id="${currentItemId}"]`)
+            .closest(".item-card");
           if (itemCard) {
-            const itemInfo = itemCard.querySelector('.item-info');
+            const itemInfo = itemCard.querySelector(".item-info");
             itemInfo.innerHTML = `
               <h3 class="font-bold">${updatedItem.item_name}</h3>
               <p>${updatedItem.item_description}</p>
             `;
           }
-          
+
           closeEditForm();
         } else {
-          alert(data.message || 'Failed to update item. Please try again.');
+          alert(data.message || "Failed to update item. Please try again.");
         }
       })
-      .catch(error => {
-        console.error('Error updating item:', error);
-        alert('An error occurred while updating the item.');
+      .catch((error) => {
+        console.error("Error updating item:", error);
+        alert("An error occurred while updating the item.");
       });
   });
 
   // Logout button functionality
-  logoutBtn.addEventListener('click', () => {
-    window.location.href = '/logout';
+  logoutBtn.addEventListener("click", () => {
+    window.location.href = "/logout";
   });
 
   // Initial setup - Load profile content immediately

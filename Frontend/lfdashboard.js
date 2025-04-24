@@ -75,19 +75,30 @@ function renderItems(items) {
   }
 
   items.forEach((item) => {
+    const isResolved = item.status === "Resolved";
     const card = document.createElement("div");
     card.className = `lost-found-card border rounded-lg ${
       item.status === "Lost"
         ? "bg-red-50 hover:shadow-red-400"
-        : "bg-green-50 hover:shadow-green-400"
+        : item.status === "Found"
+        ? "bg-green-50 hover:shadow-green-400"
+        : "bg-blue-50 hover:shadow-blue-400"
     } hover:shadow-lg transition-shadow relative`;
 
     card.innerHTML = `
       <div class="absolute top-2 right-2 bg-${
-        item.status === "Lost" ? "red" : "green"
+        item.status === "Lost"
+          ? "red"
+          : item.status === "Found"
+          ? "green"
+          : "blue"
       }-500 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center">
         <span class="w-2 h-2 bg-${
-          item.status === "Lost" ? "red" : "green"
+          item.status === "Lost"
+            ? "red"
+            : item.status === "Found"
+            ? "green"
+            : "blue"
         }-700 rounded-full mr-1"></span> ${item.status}
       </div>
       <div class="w-full h-54">
@@ -106,52 +117,64 @@ function renderItems(items) {
         <p><strong>When:</strong> ${item.reportedDate.split("T")[0]}</p>
         <p><strong>Description:</strong> ${item.item_description}</p>
         <p><strong>Name:</strong> ${item.reporter_name}</p>
-
       </div>
       <div class="m-4">
-        <button class="contact-btn w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition" 
+        <button class="contact-btn w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition ${
+          isResolved ? "disabled" : ""
+        }" 
           data-item-id="${item._id}" 
-          data-owner-id="${item.reporter_email}">
-          Contact
+          data-owner-id="${item.reporter_email}"
+          ${isResolved ? "disabled" : ""}>
+          ${isResolved ? "Item Resolved" : "Contact"}
         </button>
       </div>
     `;
 
-            // <p><strong>Email:</strong> ${item.reporter_email}</p>
-        // <p><strong>Contact:</strong> ${item.reporter_contact}</p>
-
     itemsContainer.appendChild(card);
   });
 
+  // Add CSS for disabled button
+  const style = document.createElement('style');
+  style.textContent = `
+    .contact-btn.disabled {
+      background-color: #cccccc !important;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+  `;
+  document.head.appendChild(style);
+
   // Add event listeners to "Contact" buttons
   document.querySelectorAll(".contact-btn").forEach((button) => {
-    button.addEventListener("click", async function () {
-      const receiverId = this.getAttribute("data-owner-id");
+    if (!button.disabled) {
+      button.addEventListener("click", async function () {
+        const receiverId = this.getAttribute("data-owner-id");
 
-      if (!currentUserId) {
-        alert("Unable to fetch your user ID. Please log in again.");
-        return;
-      }
-
-      try {
-        // Create a new chat (if it doesn't already exist)
-        const response = await fetch("/chat/createChat", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ senderId: currentUserId, receiverId }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to create chat");
+        if (!currentUserId) {
+          alert("Unable to fetch your user ID. Please log in again.");
+          return;
         }
 
-        // Redirect to the chat page with receiverId in the query string
-        window.location.href = `/chat?receiverId=${receiverId}`;
-      } catch (error) {
-        alert("Unable to create chat. Please try again.");
-      }
-    });
+        try {
+          // Create a new chat (if it doesn't already exist)
+          const response = await fetch("/chat/createChat", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ senderId: currentUserId, receiverId }),
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to create chat");
+          }
+
+          // Redirect to the chat page with receiverId in the query string
+          window.location.href = `/chat?receiverId=${receiverId}`;
+        } catch (error) {
+          alert("Unable to create chat. Please try again.");
+        }
+      });
+    }
   });
 }
