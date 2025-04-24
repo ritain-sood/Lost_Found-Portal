@@ -106,8 +106,7 @@ function renderItems(items) {
         <p><strong>When:</strong> ${item.reportedDate.split("T")[0]}</p>
         <p><strong>Description:</strong> ${item.item_description}</p>
         <p><strong>Name:</strong> ${item.reporter_name}</p>
-        <p><strong>Email:</strong> ${item.reporter_email}</p>
-        <p><strong>Contact:</strong> ${item.reporter_contact}</p>
+
       </div>
       <div class="m-4">
         <button class="contact-btn w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition" 
@@ -117,6 +116,9 @@ function renderItems(items) {
         </button>
       </div>
     `;
+
+            // <p><strong>Email:</strong> ${item.reporter_email}</p>
+        // <p><strong>Contact:</strong> ${item.reporter_contact}</p>
 
     itemsContainer.appendChild(card);
   });

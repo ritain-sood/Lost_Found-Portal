@@ -351,6 +351,8 @@ document.addEventListener('DOMContentLoaded', () => {
                   <p>${item.item_description}</p>
                 </div>
                 <span class="status-tag ${item.status.toLowerCase()}">● ${item.status}</span>
+                <span></span>
+                <button class="resolved-btn ml-2" data-id="${item._id}">Resolved</button>
                 <div class="card-actions">
                   <button class="edit-btn" data-id="${item._id}">Edit</button>
                   <button class="delete-btn" data-id="${item._id}">Delete</button>
