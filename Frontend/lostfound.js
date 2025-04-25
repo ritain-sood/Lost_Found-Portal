@@ -126,11 +126,18 @@ document.querySelector(".btn").addEventListener("click", function (event) {
   const reporterName = document.getElementById("name").value;
   const reporterEmail = document.getElementById("email").value;
   const reporterContact = document.getElementById("contactInfo").value;
+  const description = formData.get("item_description");
 
   // Validate required fields
-  if (!formData.get("item_name") || !formData.get("item_description") || 
+  if (!formData.get("item_name") || !description || 
       !formData.get("category") || !formData.get("location")) {
     alert("Please fill in all required fields: Item Name, Description, Location, and Category.");
+    return;
+  }
+
+  // Validate description length
+  if (description.length < 25 || description.length > 50) {
+    alert("Description must be between 25 - 50 characters long.");
     return;
   }
 

@@ -124,7 +124,11 @@ function renderItems(items) {
         <p><strong>Category:</strong> ${item.category}</p>
         <p><strong>Where:</strong> ${item.location}</p>
         <p><strong>When:</strong> ${item.reportedDate.split("T")[0]}</p>
-        <p><strong>Description:</strong> ${item.item_description}</p>
+        <p><strong>Description:</strong> ${
+          item.item_description.length > 50 
+            ? item.item_description.substring(0, 47) + '...' 
+            : item.item_description
+        }</p>
         <p><strong>Name:</strong> ${item.reporter_name}</p>
       </div>
       <div class="m-4">
