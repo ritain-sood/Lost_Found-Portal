@@ -74,7 +74,16 @@ function renderItems(items) {
     return;
   }
 
-  items.forEach((item) => {
+  // Sort items: Lost and Found first, then Resolved
+  const sortedItems = items.sort((a, b) => {
+    const aResolved = a.status === "Resolved";
+    const bResolved = b.status === "Resolved";
+    
+    if (aResolved === bResolved) return 0;
+    return aResolved ? 1 : -1;
+  });
+
+  sortedItems.forEach((item) => {
     const isResolved = item.status === "Resolved";
     const card = document.createElement("div");
     card.className = `lost-found-card border rounded-lg ${
