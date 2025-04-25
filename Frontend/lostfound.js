@@ -116,17 +116,19 @@ document.querySelectorAll(".category").forEach((category) => {
 });
 
 // Form validation and submission
-document.querySelector(".btn").addEventListener("click", function (event) {
+document.getElementById("reportForm").addEventListener("submit", function (event) {
   event.preventDefault();
 
   // Get all form values
-  const formData = new FormData(document.getElementById("reportForm"));
+  const formData = new FormData(this);
   
   // Get user data from the pre-filled fields
   const reporterName = document.getElementById("name").value;
   const reporterEmail = document.getElementById("email").value;
   const reporterContact = document.getElementById("contactInfo").value;
   const description = formData.get("item_description");
+  const imageInput = document.getElementById("item_image");
+  const uploadedFile = formData.get("item_image");
 
   // Validate required fields
   if (!formData.get("item_name") || !description || 
@@ -141,6 +143,12 @@ document.querySelector(".btn").addEventListener("click", function (event) {
     return;
   }
 
+  // Validate image upload
+  if (!uploadedFile || uploadedFile.size === 0) {
+    alert("Please upload an image of the item.");
+    return;
+  }
+
   if (!formData.get("status")) {
     alert("Please select the status (Lost or Found).");
     return;
@@ -152,21 +160,15 @@ document.querySelector(".btn").addEventListener("click", function (event) {
   }
 
   // Ensure user data is included
-  formData.set("reporter_name", reporterName);
-  formData.set("reporter_email", reporterEmail);
-  formData.set("reporter_contact", reporterContact);
+  formData.append("reporter_name", reporterName);
+  formData.append("reporter_email", reporterEmail);
+  formData.append("reporter_contact", reporterContact);
 
   // Log the form data for debugging
-  console.log("Submitting form with data:", {
-    reporterName,
-    reporterEmail,
-    reporterContact,
-    itemName: formData.get("item_name"),
-    category: formData.get("category"),
-    status: formData.get("status"),
-    location: formData.get("location"),
-    date: formData.get("custom_date")
-  });
+  console.log("Form Data Contents:");
+  for (let pair of formData.entries()) {
+    console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
+  }
 
   // Submit the form data
   fetch("/api/reports", {
@@ -184,7 +186,6 @@ document.querySelector(".btn").addEventListener("click", function (event) {
   })
   .then(data => {
     if (data.success) {
-      // alert("Item reported successfully!");
       window.location.href = "/auth/dashboard";
     } else {
       alert(data.message || "Failed to report item. Please try again.");

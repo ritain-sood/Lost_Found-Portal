@@ -357,12 +357,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 <span class="status-tag ${item.status.toLowerCase()}">● ${item.status}</span>
                 <button class="resolved-btn ml-2 ${isResolved ? 'disabled' : ''}" 
                         data-id="${item._id}"
-                        ${isResolved ? 'disabled' : ''}>
+                        ${isResolved ? 'hidden' : ''}>
                   Resolved
                 </button>
                 <div class="card-actions">
-                  <button class="edit-btn" data-id="${item._id}">Edit</button>
-                  <button class="delete-btn" data-id="${item._id}">Delete</button>
+                  <button class="edit-btn ${isResolved ? 'disabled' : ''}" 
+                        data-id="${item._id}"
+                        ${isResolved ? 'hidden' : ''}>
+                  Edit
+                </button>
+                <button class="delete-btn ${isResolved ? 'disabled' : ''}" 
+                        data-id="${item._id}"
+                        ${isResolved ? 'hidden' : ''}>
+                  Delete
+                </button>
                 </div>
               </div>
             `;
@@ -372,7 +380,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // Add CSS for disabled button
             const style = document.createElement('style');
             style.textContent = `
-              .resolved-btn.disabled {
+              .resolved-btn.disabled,.edit-btn.disabled,.delete-btn.disabled {
                 background-color: #cccccc;
                 cursor: not-allowed;
                 opacity: 0.6;
@@ -433,12 +441,17 @@ document.addEventListener("DOMContentLoaded", () => {
                       const itemCard = button.closest(".item-card");
                       if (itemCard) {
                         const statusTag = itemCard.querySelector(".status-tag");
+                        const editBtn = itemCard.querySelector(".edit-btn");
+                        const deleteBtn = itemCard.querySelector(".delete-btn");
+                        
                         if (statusTag) {
                           statusTag.textContent = "● Resolved";
                           statusTag.className = "status-tag resolved";
                         }
-                        // Hide the resolved button after status is updated
+                        // Hide all the buttons
                         button.style.display = "none";
+                        if (editBtn) editBtn.style.display = "none";
+                        if (deleteBtn) deleteBtn.style.display = "none";
                       }
                     } else {
                       alert(result.message || "Failed to update status");
