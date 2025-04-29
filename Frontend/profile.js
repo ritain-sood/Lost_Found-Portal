@@ -567,4 +567,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initial setup - Load profile content immediately
   setupProfileContent();
+
+  
 });

@@ -5,6 +5,8 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const moment = require("moment-timezone");
+const { notifyMatchingUsers } = require("./notify"); // <-- Import the notification function
+const nodemailer = require("nodemailer"); // Add at the top if not present
 
 // Setup upload directory
 const uploadDir = path.join(__dirname, "../public/uploads");
@@ -88,7 +90,12 @@ router.post("/reports", upload.single("item_image"), async (req, res) => {
     console.log("Inserting new item:", newItem); // Debugging
 
     const result = await dbinstance.collection("items").insertOne(newItem);
-    
+
+    // Notify matching users (Lost <-> Found)
+    if (result.insertedId) {
+      await notifyMatchingUsers(newItem, dbinstance);
+    }
+
     if (result.insertedId) {
       res.json({ success: true, message: "Item reported successfully" });
     } else {
@@ -136,4 +143,51 @@ router.get("/userDetails", async (req, res) => {
   }
 });
 
+
+
+// ...existing code...
+
+// Feedback endpoint
+// ...existing code...
+
+// ...existing code...
+
+// Feedback endpoint
+// router.post("/send-feedback", async (req, res) => {
+//   try {
+//     const { itemId, feedback } = req.body;
+//     if (!feedback) return res.status(400).json({ success: false, message: "Feedback required" });
+
+//     // Optionally, fetch user/item info for context
+//     const db = getDB();
+//     const item = await db.collection("items").findOne({ _id: new ObjectId(itemId) });
+
+//     // Send feedback via email
+//     const transporter = nodemailer.createTransport({
+//       service: "gmail",
+//       auth: {
+//         user: process.env.NOTIFY_EMAIL_USER,
+//         pass: process.env.NOTIFY_EMAIL_PASS,
+//       },
+//     });
+
+//     await transporter.sendMail({
+//       from: process.env.NOTIFY_EMAIL_USER,
+//       to: process.env.NOTIFY_EMAIL_USER, // Send to your admin/support email
+//       subject: "Lost & Found Portal - User Feedback",
+//       text: `Feedback for item: ${item ? item.item_name : "Unknown"} (${itemId})
+// User: ${item ? item.reporter_name + " <" + item.reporter_email + ">" : "Unknown"}
+// ---
+// ${feedback}
+// `,
+//     });
+
+//     res.json({ success: true, message: "Feedback sent" });
+//   } catch (err) {
+//     console.error("Error sending feedback:", err);
+//     res.status(500).json({ success: false, message: "Failed to send feedback" });
+//   }
+// });
+
+// ...existing code...
 module.exports = router;
