@@ -1,20 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 flex justify-center items-center min-h-screen p-4">
 
-    <div class="bg-white p-6 rounded-2xl shadow-lg w-full max-w-lg">
-        
+<body class="bg-gradient-to-r from-blue-100 to-purple-200 flex justify-center items-center min-h-screen p-4">
+
+    <div class="bg-gray-50 p-6 rounded-2xl shadow-lg w-full max-w-lg">
+
         <!-- Profile Image -->
         <div class="flex justify-center mb-4">
             <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
                 <svg class="w-10 h-10 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 12c2.5 0 4.5-2 4.5-4.5S14.5 3 12 3 7.5 5 7.5 7.5 9.5 12 12 12zm0 1.5c-3 0-9 1.5-9 4.5v1.5h18V18c0-3-6-4.5-9-4.5z" />
+                    <path
+                        d="M12 12c2.5 0 4.5-2 4.5-4.5S14.5 3 12 3 7.5 5 7.5 7.5 9.5 12 12 12zm0 1.5c-3 0-9 1.5-9 4.5v1.5h18V18c0-3-6-4.5-9-4.5z" />
                 </svg>
             </div>
         </div>
@@ -24,34 +27,41 @@
             <h2 class="text-2xl font-semibold">Create your account</h2>
         </div>
 
-        
+
 
         <!-- Form Section -->
         <form method="post" action="/auth/addCred">
-             <!-- Name Fields -->
+            <!-- Name Fields -->
             <div class="grid grid-cols-2 gap-4">
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-medium" for="firstname">First name</label>
-                    <input type="text"  class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" id="firstname" name="firstname" required/>
+                    <input type="text"
+                        class="w-full p-2 border bg-gray-50 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                        id="firstname" name="firstname" required />
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-medium" for="lastname">Last name</label>
-                    <input type="text" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" id="lastname" name="lastname" required />
+                    <input type="text"
+                        class="w-full p-2 border bg-gray-50 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                        id="lastname" name="lastname" required />
                 </div>
-            
+
             </div>
 
             <!-- Email -->
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-medium" for="email">E-mail</label>
-                <input type="email" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" id="email" name="username" required/>
+                <input type="email"
+                    class="w-full p-2 border bg-gray-50 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                    id="email" name="username" required />
             </div>
 
             <!-- Phone -->
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-medium" for="phone">Phone</label>
                 <div class="flex border rounded-lg overflow-hidden">
-                    <input type="tel" class="w-full p-2 focus:ring-2 focus:ring-blue-400 focus:outline-none" placeholder="Phone number" id="phone" name="phone" required />
+                    <input type="tel" class="w-full p-2 bg-gray-50 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                        placeholder="Phone number" id="phone" name="phone" required />
                 </div>
             </div>
 
@@ -59,46 +69,50 @@
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-medium" for="password">Password</label>
                 <div class="relative">
-                    <input type="password" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" id="password" name="password" required />
+                    <input type="password"
+                        class="w-full p-2 border bg-gray-50 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                        id="password" name="password" required />
                 </div>
             </div>
 
             <!-- Checkboxes -->
             <div class="mb-4">
-            <div class="mb-4">
-                <label class="flex items-center space-x-2 text-gray-600 text-sm">
-                    <input type="checkbox" class="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-2 focus:ring-blue-400" required/>
-                    <span>
-                        I agree to the terms & conditions
-                    </span>
-                </label>
-            </div>
+                <div class="mb-4">
+                    <label class="flex items-center space-x-2 text-gray-600 text-sm">
+                        <input type="checkbox"
+                            class="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-2 focus:ring-blue-400"
+                            required />
+                        <span>
+                            I agree to the terms & conditions
+                        </span>
+                    </label>
+                </div>
 
-            <!-- Submit Button -->
-            <button class="w-full bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 focus:ring-2 focus:ring-blue-400 transition">
-                Register
-            </button>
+                <!-- Submit Button -->
+                <button
+                    class="w-full bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 focus:ring-2 focus:ring-blue-400 transition">
+                    Register
+                </button>
         </form>
         <div class="text-center mb-6">
             <p class="text-gray-500 text-sm">
                 Already have an account? <a href="/auth/login" class="text-blue-500 hover:underline">Login</a>
             </p>
-    </div>
-    <div class="mt-6 text-center">
-        <button
-          type="button"
-          class="btn bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 shadow-md transition"
-        >
-          Back to Home
-        </button>
-      </div>
-    
+        </div>
+        <div class="mt-6 text-center">
+            <button type="button"
+                class="btn bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 shadow-md transition">
+                Back to Home
+            </button>
+        </div>
+
 
 </body>
 <script>
     let btn = document.querySelector(".btn");
     btn.addEventListener("click", function () {
-      window.location.href = "/";
+        window.location.href = "/";
     });
-  </script>
+</script>
+
 </html>

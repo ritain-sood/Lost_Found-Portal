@@ -1,105 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-  <body class="bg-gray-100 flex justify-center items-center min-h-screen p-4">
-    <div class="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md">
-      <!-- Profile Image -->
-      <div class="flex justify-center mb-4">
-        <div
-          class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center"
-        >
-          <svg
-            class="w-10 h-10 text-gray-500"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              d="M12 12c2.5 0 4.5-2 4.5-4.5S14.5 3 12 3 7.5 5 7.5 7.5 9.5 12 12 12zm0 1.5c-3 0-9 1.5-9 4.5v1.5h18V18c0-3-6-4.5-9-4.5z"
-            />
-          </svg>
-        </div>
-      </div>
 
-      <!-- Header Section -->
-      <div class="text-center mb-6">
-        <h2 class="text-2xl font-semibold">Login to Your Account</h2>
-      </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
 
-      <!-- Login Form -->
-      <form action="/auth/checkCred" method="post">
-        <!-- Add a hidden input field for the redirect parameter -->
-        <input type="hidden" id="redirectInput" name="redirect" value="/" />
-      
-        <!-- Email -->
-        <div class="mb-4">
-          <label for="email" class="block text-gray-700 text-sm font-medium">E-mail</label>
-          <input
-            type="email"
-            id="email"
-            name="username"
-            class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
-            placeholder="Enter your email"
-            required
-          />
-        </div>
-      
-        <!-- Password -->
-        <div class="mb-4">
-          <label for="password" class="block text-gray-700 text-sm font-medium">Password</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
-            placeholder="Enter your password"
-            required
-          />
-        </div>
-      
-        <!-- Login Button -->
-        <button
-          class="w-full bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 focus:ring-2 focus:ring-blue-400 transition"
-        >
-          Login
-        </button>
-      </form>
-
-      <!-- Signup Button -->
-      <div class="text-center mb-6">
-        <p class="text-gray-500 text-sm">
-          Don't have an account?
-          <a href="/auth/signup" class="text-blue-500 hover:underline"
-            >Sign Up</a
-          >
-        </p>
-      </div>
-
-      <div class="mt-6 text-center">
-        <button
-          type="button"
-          class="btn bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 shadow-md transition"
-        >
-          Back to Home
-        </button>
+<body class="bg-gradient-to-r from-blue-100 to-purple-200 flex justify-center items-center min-h-screen p-4">
+  <div class="bg-gray-50 p-6 rounded-2xl shadow-lg w-full max-w-md">
+    <!-- Profile Image -->
+    <div class="flex justify-center mb-4">
+      <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
+        <svg class="w-10 h-10 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
+          <path
+            d="M12 12c2.5 0 4.5-2 4.5-4.5S14.5 3 12 3 7.5 5 7.5 7.5 9.5 12 12 12zm0 1.5c-3 0-9 1.5-9 4.5v1.5h18V18c0-3-6-4.5-9-4.5z" />
+        </svg>
       </div>
     </div>
-  </body>
-  <script>
-    // Dynamically set the redirect parameter
-    const params = new URLSearchParams(window.location.search);
-    const redirect = params.get("redirect") || "/";
-    document.getElementById("redirectInput").value = redirect;
 
-    // Back to Home Button
-    let btn = document.querySelector(".btn");
-    btn.addEventListener("click", function () {
-      window.location.href = "/";
-    });
-  </script>
+    <!-- Header Section -->
+    <div class="text-center mb-6">
+      <h2 class="text-2xl font-semibold">Login to Your Account</h2>
+    </div>
+
+    <!-- Login Form -->
+    <form action="/auth/checkCred" method="post">
+      <!-- Add a hidden input field for the redirect parameter -->
+      <input type="hidden" id="redirectInput" name="redirect" value="/" />
+
+      <!-- Email -->
+      <div class="mb-4">
+        <label for="email" class="block text-gray-700 text-sm font-medium">E-mail</label>
+        <input type="email" id="email" name="username"
+          class="w-full p-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          placeholder="Enter your email" required />
+      </div>
+
+      <!-- Password -->
+      <div class="mb-4">
+        <label for="password" class="block text-gray-700 text-sm font-medium">Password</label>
+        <input type="password" id="password" name="password"
+          class="w-full p-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          placeholder="Enter your password" required />
+      </div>
+
+      <!-- Login Button -->
+      <button
+        class="w-full bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 focus:ring-2 focus:ring-blue-400 transition">
+        Login
+      </button>
+    </form>
+
+    <!-- Signup Button -->
+    <div class="text-center mb-6">
+      <p class="text-gray-500 text-sm">
+        Don't have an account?
+        <a href="/auth/signup" class="text-blue-500 hover:underline">Sign Up</a>
+      </p>
+    </div>
+
+    <div class="mt-6 text-center">
+      <button type="button"
+        class="btn bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 shadow-md transition">
+        Back to Home
+      </button>
+    </div>
+  </div>
+</body>
+<script>
+  // Dynamically set the redirect parameter
+  const params = new URLSearchParams(window.location.search);
+  const redirect = params.get("redirect") || "/";
+  document.getElementById("redirectInput").value = redirect;
+
+  // Back to Home Button
+  let btn = document.querySelector(".btn");
+  btn.addEventListener("click", function () {
+    window.location.href = "/";
+  });
+</script>
+
 </html>
-

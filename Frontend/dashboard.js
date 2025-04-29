@@ -1,15 +1,40 @@
-// let index = 0;
+const reviewsWrapper = document.getElementById('reviews-wrapper');
+    const dotsContainer = document.getElementById('dots-container');
 
-// function slideTestimonials() {
-//     const slider = document.getElementById('slider');
-//     const testimonials = document.querySelectorAll('.testimonial').length;
+    let currentIndex = 0;
+    const totalReviews = reviewsWrapper.children.length;
+    const cardsToShow = 4; // Number of cards to show at a time
 
-//     index = (index + 1) % testimonials; // Loop back to start after last
-//     slider.style.transform = translateX(-${index * 50}%);
+    // Function to slide reviews
+    const slideReviews = (index) => {
+      currentIndex = index;
+      const offset = -currentIndex * (100 / cardsToShow);
+      reviewsWrapper.style.transform = `translateX(${offset}%)`;
+      updateDots();
+    };
+    // Automatic sliding
+    const autoSlideInterval = 3000; // 3 seconds
+    let autoSlide = setInterval(() => {
+      if (currentIndex <= totalReviews - cardsToShow) {
+        currentIndex++;
+      } else {
+        currentIndex = 0; // Reset to the first card
+      }
+      slideReviews(currentIndex);
+    }, autoSlideInterval);
 
-// }
-
-// setInterval(slideTestimonials, 3000);
+    // Pause auto-slide on hover
+    reviewsWrapper.addEventListener('mouseenter', () => clearInterval(autoSlide));
+    reviewsWrapper.addEventListener('mouseleave', () => {
+      autoSlide = setInterval(() => {
+        if (currentIndex < totalReviews - cardsToShow) {
+          currentIndex++;
+        } else {
+          currentIndex = 0; // Reset to the first card
+        }
+        slideReviews(currentIndex);
+      }, autoSlideInterval);
+    });
 
 document.addEventListener("DOMContentLoaded", async () => {
   async function checkLoginStatus() {

@@ -37,8 +37,9 @@ document.addEventListener("DOMContentLoaded", async function () {
     function filterAndRender() {
       const query = searchInput.value.toLowerCase();
       const selectedCategory = categoryFilter.value;
-      const filtered = allItems.filter(item => {
-        const matchesCategory = !selectedCategory || item.category === selectedCategory;
+      const filtered = allItems.filter((item) => {
+        const matchesCategory =
+          !selectedCategory || item.category === selectedCategory;
         const matchesQuery =
           item.item_name.toLowerCase().includes(query) ||
           item.category.toLowerCase().includes(query) ||
@@ -51,7 +52,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     searchInput.addEventListener("input", filterAndRender);
     categoryFilter.addEventListener("change", filterAndRender);
-
   } catch (error) {
     console.error("Error fetching items:", error);
     itemsContainer.innerHTML =
@@ -78,7 +78,7 @@ function renderItems(items) {
   const sortedItems = items.sort((a, b) => {
     const aResolved = a.status === "Resolved";
     const bResolved = b.status === "Resolved";
-    
+
     if (aResolved === bResolved) return 0;
     return aResolved ? 1 : -1;
   });
@@ -125,8 +125,8 @@ function renderItems(items) {
         <p><strong>Where:</strong> ${item.location}</p>
         <p><strong>When:</strong> ${item.reportedDate.split("T")[0]}</p>
         <p><strong>Description:</strong> ${
-          item.item_description.length > 50 
-            ? item.item_description.substring(0, 47) + '...' 
+          item.item_description.length > 50
+            ? item.item_description.substring(0, 47) + "..."
             : item.item_description
         }</p>
         <p><strong>Name:</strong> ${item.reporter_name}</p>
@@ -147,7 +147,7 @@ function renderItems(items) {
   });
 
   // Add CSS for disabled button
-  const style = document.createElement('style');
+  const style = document.createElement("style");
   style.textContent = `
     .contact-btn.disabled {
       background-color: #cccccc !important;
@@ -158,48 +158,46 @@ function renderItems(items) {
   document.head.appendChild(style);
 
   // Add event listeners to "Contact" buttons
-  
-// ...existing code...
-document.querySelectorAll(".contact-btn").forEach((button) => {
-  if (!button.disabled) {
-    button.addEventListener("click", async function () {
-      const receiverId = this.getAttribute("data-owner-id");
-      const itemId = this.getAttribute("data-item-id");
 
-      if (!currentUserId) {
-        alert("Unable to fetch your user ID. Please log in again.");
-        return;
-      }
+  // ...existing code...
+  document.querySelectorAll(".contact-btn").forEach((button) => {
+    if (!button.disabled) {
+      button.addEventListener("click", async function () {
+        const receiverId = this.getAttribute("data-owner-id");
+        const itemId = this.getAttribute("data-item-id");
 
-      try {
-        // Create a new chat (if it doesn't already exist)
-        const response = await fetch("/chat/createChat", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ senderId: currentUserId, receiverId }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to create chat");
+        if (!currentUserId) {
+          alert("Unable to fetch your user ID. Please log in again.");
+          return;
         }
 
-        // Send the email notification and wait for it to finish (but don't block UI)
-        fetch("/notify/notify-owner", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ itemId, contactUserEmail: currentUserId }),
-        }).finally(() => {
-          // Redirect to the chat page after the request is sent (success or fail)
-          window.location.href = `/chat?receiverId=${receiverId}`;
-        });
+        try {
+          // Create a new chat (if it doesn't already exist)
+          const response = await fetch("/chat/createChat", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ senderId: currentUserId, receiverId }),
+          });
 
-      } catch (error) {
-        alert("Unable to create chat or notify owner. Please try again.");
-      }
-    });
-  }
-});
-// ...existing code...
+          if (!response.ok) {
+            throw new Error("Failed to create chat");
+          }
+
+          // Send the email notification and wait for it to finish (but don't block UI)
+          fetch("/notify/notify-owner", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ itemId, contactUserEmail: currentUserId }),
+          }).finally(() => {
+            // Redirect to the chat page after the request is sent (success or fail)
+            window.location.href = `/chat?receiverId=${receiverId}`;
+          });
+        } catch (error) {
+          alert("Unable to create chat or notify owner. Please try again.");
+        }
+      });
+    }
+  });
 }
