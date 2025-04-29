@@ -93,7 +93,7 @@ router.post("/reports", upload.single("item_image"), async (req, res) => {
 
     // Notify matching users (Lost <-> Found)
     if (result.insertedId) {
-      await notifyMatchingUsers(newItem, dbinstance);
+      notifyMatchingUsers(newItem, dbinstance);
     }
 
     if (result.insertedId) {

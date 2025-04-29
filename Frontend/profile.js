@@ -5,6 +5,269 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentUserEmail = ""; // Variable to hold the user's email
   let initialValues = {};
 
+  // Check URL parameters for tab
+  const urlParams = new URLSearchParams(window.location.search);
+  const tabParam = urlParams.get('tab');
+
+  // Function to switch to a specific tab
+  const switchToTab = (tabName) => {
+    const targetButton = Array.from(navButtons).find(btn => btn.getAttribute('data-tab') === tabName);
+    if (targetButton) {
+      navButtons.forEach(b => b.classList.remove("active"));
+      targetButton.classList.add("active");
+      
+      if (tabName === "items") {
+        // Trigger items tab content
+        handleItemsTab();
+      } else if (tabName === "profile") {
+        setupProfileContent();
+      } else if (tabName === "dashboard") {
+        window.location.href = "/";
+      }
+    }
+  };
+
+  // Function to handle items tab content
+  const handleItemsTab = async () => {
+    try {
+      const response = await fetch("/user/items", {
+        credentials: "include",
+      });
+      const data = await response.json();
+      currentUserEmail = data.userEmail;
+
+      if (data.message === "No Items Listed") {
+        mainContent.innerHTML = `<p>No Items Listed</p>`;
+      } else {
+        let itemsHTML = "";
+        data.items.forEach((item) => {
+          const isResolved = item.status === "Resolved";
+          itemsHTML += `
+          <div class="item-card">
+            <img src="${item.image}" class="item-image" alt="Item">
+            <div class="item-info">
+              <h3 class="font-bold">${item.item_name}</h3>
+              <p>${item.item_description}</p>
+            </div>
+            <span class="status-tag ${item.status.toLowerCase()}">● ${item.status}</span>
+            <button class="resolved-btn ml-2 ${isResolved ? 'disabled' : ''}" 
+                    data-id="${item._id}"
+                    ${isResolved ? 'hidden' : ''}>
+              Resolved
+            </button>
+            <div class="card-actions">
+              <button class="edit-btn ${isResolved ? 'disabled' : ''}" 
+                    data-id="${item._id}"
+                    ${isResolved ? 'hidden' : ''}>
+                Edit
+              </button>
+              <button class="delete-btn ${isResolved ? 'disabled' : ''}" 
+                    data-id="${item._id}"
+                    ${isResolved ? 'hidden' : ''}>
+                Delete
+              </button>
+            </div>
+          </div>
+        `;
+        });
+        mainContent.innerHTML = itemsHTML;
+        
+        // Re-attach event listeners for the buttons
+        attachItemButtonListeners();
+      }
+    } catch (error) {
+      console.error("Error fetching items:", error);
+      mainContent.innerHTML = `<p>Error loading items. Please try again later.</p>`;
+    }
+  };
+
+  // Function to attach event listeners to item buttons
+  const attachItemButtonListeners = () => {
+    document.querySelectorAll(".delete-btn").forEach((button) => {
+      button.addEventListener("click", async () => {
+        const id = button.getAttribute("data-id");
+        if (confirm("Are you sure you want to delete this item?")) {
+          try {
+            const response = await fetch(`/user/items/${id}`, {
+              method: "DELETE",
+              credentials: "include",
+            });
+            const result = await response.json();
+            alert(result.message || "Item deleted");
+            button.closest(".item-card").remove();
+          } catch (err) {
+            console.error("Delete failed:", err);
+            alert("Failed to delete item.");
+          }
+        }
+      });
+    });
+
+    document.querySelectorAll(".edit-btn").forEach((button) => {
+      button.addEventListener("click", () => {
+        const itemId = button.getAttribute("data-id");
+        openEditForm(itemId);
+      });
+    });
+
+    document.querySelectorAll(".resolved-btn").forEach((button) => {
+      button.addEventListener("click", async () => {
+        const id = button.getAttribute("data-id");
+        if (confirm('Are you sure you want to update the status to "Resolved"?')) {
+          try {
+            const response = await fetch(`/user/resolved/${id}`, {
+              method: "PUT",
+              credentials: "include",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                status: "Resolved"
+              })
+            });
+            const result = await response.json();
+            if (result.success) {
+              alert(result.message || "Item Status Updated");
+              const itemCard = button.closest(".item-card");
+              if (itemCard) {
+                const statusTag = itemCard.querySelector(".status-tag");
+                const editBtn = itemCard.querySelector(".edit-btn");
+                const deleteBtn = itemCard.querySelector(".delete-btn");
+                
+                if (statusTag) {
+                  statusTag.textContent = "● Resolved";
+                  statusTag.className = "status-tag resolved";
+                }
+                // Hide all the buttons
+                button.style.display = "none";
+                if (editBtn) editBtn.style.display = "none";
+                if (deleteBtn) deleteBtn.style.display = "none";
+              }
+            } else {
+              alert(result.message || "Failed to update status");
+            }
+          } catch (err) {
+            console.error("Status Update failed:", err);
+            alert("Status Update failed. Please try again.");
+          }
+        }
+      });
+    });
+  };
+
+  // Select the form and relevant elements
+  const editItemForm = document.getElementById("edit-item-form-content");
+  const cancelEditBtn = document.getElementById("cancel-edit-btn");
+  let currentItemId = ""; // Variable to store the current item ID being edited
+
+  // Function to open and populate the edit form with item details
+  function openEditForm(itemId) {
+    currentItemId = itemId;
+
+    console.log("Opening edit form for item ID:", itemId);
+
+    fetch(`user/items/${itemId}`, {
+      method: "GET",
+      credentials: "include",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.item) {
+          // Populate the form fields with the fetched item details
+          document.getElementById("item-name").value = data.item.item_name;
+          document.getElementById("item-description").value =
+            data.item.item_description;
+          document.getElementById("item-status").value = data.item.status;
+
+          // Show the edit form
+          document.getElementById("edit-item-form").classList.remove("hidden");
+        } else {
+          alert("Item not found!");
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching item details:", error);
+        alert("Error loading item details.");
+      });
+  }
+
+  // Handle the form submission
+  editItemForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const updatedItem = {
+      item_name: document.getElementById("item-name").value,
+      item_description: document.getElementById("item-description").value,
+      status: document.getElementById("item-status").value,
+    };
+
+    console.log("Updated item data:", updatedItem);
+
+    fetch(`/user/items/${currentItemId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedItem),
+      credentials: "include",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          alert("Item updated successfully!");
+
+          // Update the UI for the edited item
+          const itemCard = document
+            .querySelector(`[data-id="${currentItemId}"]`)
+            .closest(".item-card");
+          if (itemCard) {
+            const itemInfo = itemCard.querySelector(".item-info");
+            itemInfo.innerHTML = `
+              <h3 class="font-bold">${updatedItem.item_name}</h3>
+              <p>${updatedItem.item_description}</p>
+            `;
+          }
+
+          closeEditForm();
+        } else {
+          alert(data.message || "Failed to update item. Please try again.");
+        }
+      })
+      .catch((error) => {
+        console.error("Error updating item:", error);
+        alert("An error occurred while updating the item.");
+      });
+  });
+
+  // Add CSS for disabled button
+  const style = document.createElement('style');
+  style.textContent = `
+    .resolved-btn.disabled,.edit-btn.disabled,.delete-btn.disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    .status-tag.resolved {
+      background-color: #2196F3;
+    }
+  `;
+  document.head.appendChild(style);
+
+  // Handle navigation button clicks
+  navButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const tab = btn.getAttribute("data-tab");
+      switchToTab(tab);
+    });
+  });
+
+  // Initial tab handling based on URL parameter
+  if (tabParam) {
+    switchToTab(tabParam);
+  } else {
+    setupProfileContent();
+  }
+
   // Function to set up the profile content HTML
   function setupProfileContent() {
     mainContent.innerHTML = `
@@ -319,247 +582,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Handle navigation button clicks
-  navButtons.forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      navButtons.forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-
-      const tab = btn.getAttribute("data-tab");
-
-      if (tab === "profile") {
-        setupProfileContent();
-      }
-
-      if (tab === "items") {
-        try {
-          // Fetch items from the API and get the user's email as part of the response
-          const response = await fetch("/user/items", {
-            credentials: "include", // Send cookies!
-          });
-          const data = await response.json();
-          currentUserEmail = data.userEmail; // Capture the user's email from the response
-
-          // Check if there's a message saying "No Items Listed"
-          if (data.message === "No Items Listed") {
-            mainContent.innerHTML = `<p>No Items Listed</p>`;
-          } else {
-            let itemsHTML = "";
-            data.items.forEach((item) => {
-              const isResolved = item.status === "Resolved";
-              itemsHTML += `
-              <div class="item-card">
-                <img src="${item.image}" class="item-image" alt="Item">
-                <div class="item-info">
-                  <h3 class="font-bold">${item.item_name}</h3>
-                  <p>${item.item_description}</p>
-                </div>
-                <span class="status-tag ${item.status.toLowerCase()}">● ${item.status}</span>
-                <button class="resolved-btn ml-2 ${isResolved ? 'disabled' : ''}" 
-                        data-id="${item._id}"
-                        ${isResolved ? 'hidden' : ''}>
-                  Resolved
-                </button>
-                <div class="card-actions">
-                  <button class="edit-btn ${isResolved ? 'disabled' : ''}" 
-                        data-id="${item._id}"
-                        ${isResolved ? 'hidden' : ''}>
-                  Edit
-                </button>
-                <button class="delete-btn ${isResolved ? 'disabled' : ''}" 
-                        data-id="${item._id}"
-                        ${isResolved ? 'hidden' : ''}>
-                  Delete
-                </button>
-                </div>
-              </div>
-            `;
-            });
-            mainContent.innerHTML = itemsHTML;
-
-            // Add CSS for disabled button
-            const style = document.createElement('style');
-            style.textContent = `
-              .resolved-btn.disabled,.edit-btn.disabled,.delete-btn.disabled {
-                background-color: #cccccc;
-                cursor: not-allowed;
-                opacity: 0.6;
-              }
-              .status-tag.resolved {
-                background-color: #2196F3;
-              }
-            `;
-            document.head.appendChild(style);
-
-            // Attach event listeners to dynamically created buttons
-            document.querySelectorAll(".delete-btn").forEach((button) => {
-              button.addEventListener("click", async () => {
-                const id = button.getAttribute("data-id");
-                if (confirm("Are you sure you want to delete this item?")) {
-                  try {
-                    const response = await fetch(`/user/items/${id}`, {
-                      method: "DELETE",
-                      credentials: "include",
-                    });
-                    const result = await response.json();
-                    alert(result.message || "Item deleted");
-                    button.closest(".item-card").remove(); // Remove the card from DOM
-                  } catch (err) {
-                    console.error("Delete failed:", err);
-                    alert("Failed to delete item.");
-                  }
-                }
-              });
-            });
-
-            document.querySelectorAll(".edit-btn").forEach((button) => {
-              button.addEventListener("click", () => {
-                const itemId = button.getAttribute("data-id");
-                openEditForm(itemId);
-              });
-            });
-
-            document.querySelectorAll(".resolved-btn").forEach((button) => {
-              button.addEventListener("click", async () => {
-                const id = button.getAttribute("data-id");
-                if (confirm('Are you sure you want to update the status to "Resolved"?')) {
-                  try {
-                    const response = await fetch(`/user/resolved/${id}`, {
-                      method: "PUT",
-                      credentials: "include",
-                      headers: {
-                        "Content-Type": "application/json",
-                      },
-                      body: JSON.stringify({
-                        status: "Resolved"
-                      })
-                    });
-                    const result = await response.json();
-                    if (result.success) {
-                      alert(result.message || "Item Status Updated");
-                      // Update the UI
-                      const itemCard = button.closest(".item-card");
-                      if (itemCard) {
-                        const statusTag = itemCard.querySelector(".status-tag");
-                        const editBtn = itemCard.querySelector(".edit-btn");
-                        const deleteBtn = itemCard.querySelector(".delete-btn");
-                        
-                        if (statusTag) {
-                          statusTag.textContent = "● Resolved";
-                          statusTag.className = "status-tag resolved";
-                        }
-                        // Hide all the buttons
-                        button.style.display = "none";
-                        if (editBtn) editBtn.style.display = "none";
-                        if (deleteBtn) deleteBtn.style.display = "none";
-                      }
-                    } else {
-                      alert(result.message || "Failed to update status");
-                    }
-                  } catch (err) {
-                    console.error("Status Update failed:", err);
-                    alert("Status Update failed. Please try again.");
-                  }
-                }
-              });
-            });
-          }
-        } catch (error) {
-          console.error("Error fetching items:", error);
-          mainContent.innerHTML = `<p>Error loading items. Please try again later.</p>`;
-        }
-      }
-
-      if (tab === "dashboard") {
-        window.location.href = "/";
-      }
-    });
-  });
-
-  // Select the form and relevant elements
-  const editItemForm = document.getElementById("edit-item-form-content");
-  const cancelEditBtn = document.getElementById("cancel-edit-btn");
-  let currentItemId = ""; // Variable to store the current item ID being edited
-
-  // Function to open and populate the edit form with item details
-  function openEditForm(itemId) {
-    currentItemId = itemId;
-
-    console.log("Opening edit form for item ID:", itemId);
-
-    fetch(`user/items/${itemId}`, {
-      method: "GET",
-      credentials: "include",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.item) {
-          // Populate the form fields with the fetched item details
-          document.getElementById("item-name").value = data.item.item_name;
-          document.getElementById("item-description").value =
-            data.item.item_description;
-          document.getElementById("item-status").value = data.item.status;
-
-          // Show the edit form
-          document.getElementById("edit-item-form").classList.remove("hidden");
-        } else {
-          alert("Item not found!");
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching item details:", error);
-        alert("Error loading item details.");
-      });
-  }
-
-  // Handle the form submission
-  editItemForm.addEventListener("submit", function (event) {
-    event.preventDefault();
-
-    const updatedItem = {
-      item_name: document.getElementById("item-name").value,
-      item_description: document.getElementById("item-description").value,
-      status: document.getElementById("item-status").value,
-    };
-
-    console.log("Updated item data:", updatedItem);
-
-    fetch(`/user/items/${currentItemId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedItem),
-      credentials: "include",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          alert("Item updated successfully!");
-
-          // Update the UI for the edited item
-          const itemCard = document
-            .querySelector(`[data-id="${currentItemId}"]`)
-            .closest(".item-card");
-          if (itemCard) {
-            const itemInfo = itemCard.querySelector(".item-info");
-            itemInfo.innerHTML = `
-              <h3 class="font-bold">${updatedItem.item_name}</h3>
-              <p>${updatedItem.item_description}</p>
-            `;
-          }
-
-          closeEditForm();
-        } else {
-          alert(data.message || "Failed to update item. Please try again.");
-        }
-      })
-      .catch((error) => {
-        console.error("Error updating item:", error);
-        alert("An error occurred while updating the item.");
-      });
-  });
-
   // Logout button functionality
   logoutBtn.addEventListener("click", () => {
     window.location.href = "/logout";
@@ -567,6 +589,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initial setup - Load profile content immediately
   setupProfileContent();
-
-  
 });
