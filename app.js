@@ -10,13 +10,25 @@ const cookieParser = require("cookie-parser");
 const { Authentication } = require("./routes/jwtAuth");
 const { getDB } = require("./routes/mongodb");
 
+// Parse JSON and urlencoded bodies BEFORE routes
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+const notifyRoutes = require("./routes/notify");
 const server = http.createServer(app);
 const io = new Server(server);
 
 const SECRET_KEY = "your_secret_key";
 
-app.use(express.json());
+app.use("/notify", notifyRoutes);
+
+
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+
 app.use(cookieParser());
 app.use(express.static("./public"));
 

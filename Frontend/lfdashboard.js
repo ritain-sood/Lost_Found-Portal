@@ -158,36 +158,48 @@ function renderItems(items) {
   document.head.appendChild(style);
 
   // Add event listeners to "Contact" buttons
-  document.querySelectorAll(".contact-btn").forEach((button) => {
-    if (!button.disabled) {
-      button.addEventListener("click", async function () {
-        const receiverId = this.getAttribute("data-owner-id");
+  
+// ...existing code...
+document.querySelectorAll(".contact-btn").forEach((button) => {
+  if (!button.disabled) {
+    button.addEventListener("click", async function () {
+      const receiverId = this.getAttribute("data-owner-id");
+      const itemId = this.getAttribute("data-item-id");
 
-        if (!currentUserId) {
-          alert("Unable to fetch your user ID. Please log in again.");
-          return;
+      if (!currentUserId) {
+        alert("Unable to fetch your user ID. Please log in again.");
+        return;
+      }
+
+      try {
+        // Create a new chat (if it doesn't already exist)
+        const response = await fetch("/chat/createChat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ senderId: currentUserId, receiverId }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to create chat");
         }
 
-        try {
-          // Create a new chat (if it doesn't already exist)
-          const response = await fetch("/chat/createChat", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ senderId: currentUserId, receiverId }),
-          });
-
-          if (!response.ok) {
-            throw new Error("Failed to create chat");
-          }
-
-          // Redirect to the chat page with receiverId in the query string
+        // Send the email notification and wait for it to finish (but don't block UI)
+        fetch("/notify/notify-owner", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ itemId, contactUserEmail: currentUserId }),
+        }).finally(() => {
+          // Redirect to the chat page after the request is sent (success or fail)
           window.location.href = `/chat?receiverId=${receiverId}`;
-        } catch (error) {
-          alert("Unable to create chat. Please try again.");
-        }
-      });
-    }
-  });
+        });
+
+      } catch (error) {
+        alert("Unable to create chat or notify owner. Please try again.");
+      }
+    });
+  }
+});
+// ...existing code...
 }
