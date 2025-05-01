@@ -52,7 +52,8 @@
       let currentUserId = null;
       let selectedReceiverId = null;
     
-      // Extract receiverId from the URL query parameters
+
+      // Extract receiverId from URL
       const urlParams = new URLSearchParams(window.location.search);
       selectedReceiverId = urlParams.get("receiverId");
     
@@ -74,7 +75,7 @@
         }
       }
     
-      // Render the chat list and highlight the selected contact
+      // Render all chats and highlight the selected one
       function renderChatList(users) {
         // Filter out the current user from the chat list
         const filteredUsers = users.filter(user => user.userId !== currentUserId);

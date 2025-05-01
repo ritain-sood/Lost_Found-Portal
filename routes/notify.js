@@ -38,7 +38,7 @@ router.post("/notify-owner", async (req, res) => {
 
 Someone has contacted you regarding your listed item: "${item.item_name}".
 
-Contact User Email: ${contactUserEmail}
+Visit: https://lost-found-portal-n1pw.onrender.com
 
 Please check your messages in the portal for more details.
 
@@ -73,6 +73,8 @@ for (const match of matches) {
 
     Someone has added an item in the ${newItem.status} category ("${newItem.category}") that may match your report: "${newItem.item_name}".
     
+    Visit: https://lost-found-portal-n1pw.onrender.com
+
     Please check the Lost & Found portal for more details.
     
     - Lost & Found Portal Team

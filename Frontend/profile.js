@@ -155,12 +155,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
-  // Select the form and relevant elements
+  // Select the form and elements
   const editItemForm = document.getElementById("edit-item-form-content");
   const cancelEditBtn = document.getElementById("cancel-edit-btn");
-  let currentItemId = ""; // Variable to store the current item ID being edited
+  let currentItemId = ""; 
 
-  // Function to open and populate the edit form with item details
+  // Function to open and the edit form with item details
   function openEditForm(itemId) {
     currentItemId = itemId;
 
@@ -173,7 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .then((response) => response.json())
       .then((data) => {
         if (data.item) {
-          // Populate the form fields with the fetched item details
+          // The form fields with the fetched item details
           document.getElementById("item-name").value = data.item.item_name;
           document.getElementById("item-description").value =
             data.item.item_description;
@@ -265,7 +265,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (tabParam) {
     switchToTab(tabParam);
   } else {
-    setupProfileContent();
+    setupProfileContent();   
   }
 
   // Function to set up the profile content HTML

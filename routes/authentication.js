@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 
 const { Authentication, redirectIfAuthenticated } = require("./jwtAuth");
 
-const SECRET_KEY = "your_secret_key"; // Replace this with a secure key in production
+const SECRET_KEY = process.env.JWT_SECRET_KEY;
 
 
 
@@ -122,43 +122,6 @@ router.get("/check-login", async (req, res) => {
         res.status(401).json({ message: "Invalid token" });
     }
 });
-
-
-
-
-
-
-router.get("/chatUsers", Authentication, async (req, res) => {
-  try {
-    const db = getDB();
-    const currentUserId = req.user.username; // Ensure this is populated
-    const chats = await db
-      .collection("chats")
-      .aggregate([
-        { $match: { $or: [{ senderId: currentUserId }, { receiverId: currentUserId }] } },
-        {
-          $group: {
-            _id: {
-              $cond: [
-                { $eq: ["$senderId", currentUserId] },
-                "$receiverId",
-                "$senderId",
-              ],
-            },
-            lastMessage: { $last: "$message" },
-          },
-        },
-      ])
-      .toArray();
-
-    res.json(chats.map((chat) => ({ userId: chat._id, lastMessage: chat.lastMessage })));
-  } catch (error) {
-    console.error("Error fetching chat users:", error);
-    res.status(500).json({ error: "Failed to fetch chat users" });
-  }
-});
-
-
 
 
 

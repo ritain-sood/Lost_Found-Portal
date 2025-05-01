@@ -21,15 +21,15 @@ async function loadUserData() {
 
     // Set values from user data
     emailInput.value = data.user.username;
-    nameInput.value = data.user.firstname + " " + data.user.lastname; // Use part before @ as name
-    contactInput.value = data.user.phone; // We don't get phone from check-login
+    nameInput.value = data.user.firstname + " " + data.user.lastname;
+    contactInput.value = data.user.phone; 
 
     // Disable the fields
     nameInput.disabled = true;
     emailInput.disabled = true;
     contactInput.disabled = true;
 
-    // Add visual indication that fields are disabled
+    // Add visual effects that fields are disabled
     [nameInput, emailInput, contactInput].forEach(input => {
       input.classList.add('bg-gray-100');
       input.classList.add('cursor-not-allowed');
@@ -138,8 +138,13 @@ document.getElementById("reportForm").addEventListener("submit", function (event
   }
 
   // Validate description length
-  if (description.length < 25 || description.length > 50) {
-    alert("Description must be between 25 - 50 characters long.");
+  if (description.length < 25) {
+    alert("Description must be at least 25 characters long.");
+    return;
+  }
+
+  if (description.length > 50) {
+    alert("Description must be less than 50 characters.");
     return;
   }
 
