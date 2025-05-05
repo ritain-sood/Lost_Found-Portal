@@ -25,7 +25,7 @@ A Node.js-powered full-stack application that allows users to report and browse 
 
 ```bash
 Lost_Found-Portal/
-│ ├── Frontend/                # Static UI pages
+│ ├── Frontend/                # Static UI pages along with JS Files
 │ ├── routes/                  # API route handlers (auth, notify, DB)
 │ ├── app.js                   # Express server setup
 │ ├── .env.example             # Sample environment config
@@ -60,7 +60,7 @@ Update with your MongoDB URI and secret key and other notification Email and Pas
 
 ## 📄 License
 
-The **Lost & Found Portal** project is licensed under the [MITLicense](https://opensource.org/licenses/MIT).
+The **Lost & Found Portal** project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
 
 You are free to use, modify, and distribute this software for personal, academic, or commercial purposes. Please ensure that the original copyright and license notice remain intact in all copies or significant portions of the project.
 
